@@ -1,0 +1,15 @@
+{
+  "name": "Aprende Japonés",
+  "short_name": "Japonés",
+  "description": "Hiragana, katakana y 1.306 kanji: tablas y hojas imprimibles, trazos animados y juegos.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
