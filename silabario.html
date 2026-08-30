@@ -570,5 +570,6 @@ function toggleMenu(){const abierto=document.body.classList.toggle('menu-abierto
 else b.focus();}
 function pintaGruposMovil(){const marca=(id,campo,valor)=>{const g=document.getElementById(id);if(!g)return;[...g.children].forEach(b=>b.classList.toggle('on',b.dataset[campo]===valor));};marca('seg-romaji','rom',romajiPos);marca('seg-tema','tema',theme);marca('seg-vista','vista',calliOn?'calli':'tabla');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('menu-abierto')){e.stopPropagation();toggleMenu();}},true);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fitAll();if(!document.fonts.check('16px "Noto Sans JP"')){document.body.classList.add('no-webfonts');toast('Sin conexión: se usa la tipografía japonesa de tu sistema');}});window.addEventListener('load',()=>{fitAll();revisaPuente();});</script>
+<script>if('serviceWorker'in navigator&&location.protocol.indexOf('http')===0){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}</script>
 </body>
 </html>
