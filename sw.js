@@ -24,7 +24,7 @@
    No se precarga kanji-datos.js: son 1,4 MB, y quien solo abre el silabario no
    tiene por qué gastarlos. Se guarda la primera vez que se usa. */
 
-const VERSION = '0fae01b51351';
+const VERSION = 'a2aaeb60c0ed';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
@@ -59,6 +59,22 @@ function esPagina(req){
          (req.headers.get('accept') || '').includes('text/html');
 }
 
+/* SIEMPRE con ignoreVary. GitHub Pages manda `Vary: Accept-Encoding`, y cuando
+   una respuesta guardada lleva Vary, caches.match() solo acierta si las
+   cabeceras de la peticion coinciden con las de cuando se guardo. Las de una
+   navegacion NO son las del precacheo, asi que sin esto la caché estaba llena
+   y aun asi no se encontraba nada: sin red, «no estas conectado a internet».
+   ignoreSearch ademas evita que un ?loquesea rompa el acierto. */
+const BUSCAR = {ignoreVary: true, ignoreSearch: true};
+
+function guarda(req, resp){
+  if(resp && resp.status === 200 && resp.type !== 'opaque'){
+    const copia = resp.clone();
+    caches.open(CACHE).then(c => c.put(req, copia));
+  }
+  return resp;
+}
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if(req.method !== 'GET') return;
@@ -70,29 +86,27 @@ self.addEventListener('fetch', e => {
   if(!propio && !tipografia) return;
 
   if(esPagina(req)){
-    // Red primero: en línea siempre lo último; sin red, lo guardado.
+    // Red primero: en linea siempre lo ultimo; sin red, lo guardado.
     e.respondWith(
       fetch(req)
-        .then(r => {
-          const copia = r.clone();
-          caches.open(CACHE).then(c => c.put(req, copia));
-          return r;
-        })
-        .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+        .then(r => guarda(req, r))
+        .catch(() => caches.match(req, BUSCAR)
+          .then(r => r || caches.match('./index.html', BUSCAR))
+          .then(r => r || caches.match('./', BUSCAR))
+          .then(r => r || new Response(
+            '<!doctype html><meta charset=utf-8><title>Sin conexion</title>' +
+            '<body style="font:16px system-ui;padding:2rem;text-align:center">' +
+            '<h1>Sin conexion</h1><p>Esta pagina todavia no se habia guardado. ' +
+            'Vuelve a abrirla con conexion una vez y quedara disponible.</p>',
+            {headers: {'Content-Type': 'text/html; charset=utf-8'}})))
     );
     return;
   }
 
-  // Todo lo demás: caché primero, y si no está, red guardando copia.
+  // Lo demas: cache primero; si no esta, red guardando copia.
   e.respondWith(
-    caches.match(req).then(hit => hit || fetch(req).then(r => {
-      // Las respuestas opacas (tipografías sin CORS) no se pueden inspeccionar
-      // ni sirven para nada guardadas: se dejan pasar sin cachear.
-      if(r && r.status === 200 && r.type !== 'opaque'){
-        const copia = r.clone();
-        caches.open(CACHE).then(c => c.put(req, copia));
-      }
-      return r;
-    }).catch(() => hit))
+    caches.match(req, BUSCAR).then(hit =>
+      hit || fetch(req).then(r => guarda(req, r)).catch(() => hit || Response.error())
+    )
   );
 });
