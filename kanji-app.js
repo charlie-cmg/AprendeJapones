@@ -101,7 +101,7 @@ let toastTimer;function toast(msg){const t=document.getElementById('toast');docu
 let kdChar=null;let kdList=[],kdIdx=-1;let kdShown=0;let kdTimer=null;let kdAnim=null;let kdSpeed=1;function kdPaths(){const svg=document.querySelector('#kd-stage .kvg .g-ink');return svg?Array.from(svg.querySelectorAll('path')):[];}
 function kdStop(){clearTimeout(kdTimer);kdTimer=null;if(kdAnim){try{kdAnim.cancel();}catch(e){}kdAnim=null;}}
 function menosMovimiento(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
-function kdRender(k){kdShown=k;document.getElementById('kd-stage').innerHTML=strokeSVG(kdChar,{upto:k,ghost:true,numbers:true,guide:true});const total=strokesOf(kdChar).length;document.getElementById('kd-hint').textContent=k===0?total+' trazos · «Trazo +1» para ir uno a uno':k>=total?'Completo · '+total+' trazos':'Trazo '+k+' de '+total;}
+function kdRender(k){kdShown=k;document.getElementById('kd-stage').innerHTML=strokeSVG(kdChar,{upto:k,ghost:true,numbers:true,guide:true});const total=strokesOf(kdChar).length;document.getElementById('kd-hint').textContent=k===0?total+' trazos':k>=total?'Completo':'Trazo '+k+' de '+total;}
 function kdDraw(i,chain){const total=strokesOf(kdChar).length;if(i>=total){document.getElementById('kd-play').textContent='▶  Ver otra vez';return;}
 kdRender(i+1);const paths=kdPaths();const p=paths[i];if(!p){return;}
 let len=0;try{len=p.getTotalLength();}catch(e){len=40;}
