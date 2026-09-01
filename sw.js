@@ -24,7 +24,7 @@
    No se precarga kanji-datos.js: son 1,4 MB, y quien solo abre el silabario no
    tiene por qué gastarlos. Se guarda la primera vez que se usa. */
 
-const VERSION = 'c52d9c5f10f0';
+const VERSION = 'faedfefd27f5';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
