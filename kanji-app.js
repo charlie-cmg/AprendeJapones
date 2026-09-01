@@ -365,7 +365,7 @@ function tourVa(d){const n=tourPaso+d;if(n<0)return;if(n>=TOUR.length){tourCierr
 tourPaso=n;tourPinta();}
 function tourCierra(){tourQuitaFoco();document.getElementById('tour').hidden=true;LS.set(TOUR_CLAVE,'1');}
 function tourPrimeraVez(){if(LS.get(TOUR_CLAVE))return;if(TOUR_ENLACE&&/kanji=|leccion=/.test(TOUR_ENLACE)){LS.set(TOUR_CLAVE,'1');return;}
-setTimeout(()=>{if(!LS.get(TOUR_CLAVE))tourAbre();},700);}
+setTimeout(()=>{if(LS.get(TOUR_CLAVE))return;LS.set(TOUR_CLAVE,'1');tourAbre();},700);}
 leeEnlace();pintaEnlace();tourPrimeraVez();const DLG_IDS=['kanji-dlg','book-dlg','calli-dlg','game'];const FOCABLES='a[href],button:not([disabled]),input:not([disabled]),'+'select:not([disabled]),textarea:not([disabled]),'+'[tabindex]:not([tabindex="-1"])';let focoPrevio=null;function dlgAbierto(){return DLG_IDS.map(id=>document.getElementById(id)).find(d=>d&&!d.hidden)||null;}
 function focosDe(dlg){return[...dlg.querySelectorAll(FOCABLES)].filter(el=>el.offsetParent!==null);}
 document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const dlg=dlgAbierto();if(!dlg)return;const f=focosDe(dlg);if(!f.length)return;const primero=f[0],ultimo=f[f.length-1];if(!dlg.contains(document.activeElement)){e.preventDefault();(e.shiftKey?ultimo:primero).focus();return;}
