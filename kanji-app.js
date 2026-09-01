@@ -171,7 +171,7 @@ function calliPaginate(groups,rowsPerPage){const pages=[];let cur=[],used=0;grou
 cur.push(g);used+=g.rows;});if(cur.length)pages.push(cur);return pages;}
 function calliButton(){if(calliOn){setCalli(false);return;}
 openCalli();}
-function setCalli(on){calliOn=on;pintaGruposMovil();document.body.classList.toggle('calli',on);document.getElementById('v-calli').textContent=on?'Ver la lección':'Caligrafía';document.getElementById('btn-calli').classList.toggle('btn-go',on);fitAll();}
+function setCalli(on){if(!on&&typeof tzcApaga==='function')tzcApaga();calliOn=on;pintaGruposMovil();document.body.classList.toggle('calli',on);document.getElementById('v-calli').textContent=on?'Ver la lección':'Caligrafía';document.getElementById('btn-calli').classList.toggle('btn-go',on);fitAll();}
 function openCalli(){const box=document.getElementById('chips-clesson');box.innerHTML=book.lessons.map((l,i)=>'<button class="chip'+(i===lesson?' on':'')+'" data-cl="'+i+'">'+
 l.n+(l.name?' · '+esc(l.name):'')+'</button>').join('');document.getElementById('calli-dlg').hidden=false;calliReport();}
 function closeCalli(){document.getElementById('calli-dlg').hidden=true;}
@@ -185,7 +185,7 @@ pages.length+(pages.length===1?' hoja':' hojas')+' (caben '+rpp+' filas por hoja
 function buildCalli(){const chars=calliChars();if(!chars.length){toast('Elige al menos una lección');return;}
 const opt=calliOpts();const box=calliBoxSize();const rowsPerPage=calliRowsPerPage(box);const groups=chars.map(ch=>({ch,rows:calliRowsFor(strokesOf(ch).length,opt.extra)}));const pages=calliPaginate(groups,rowsPerPage);const footerHTML=document.querySelector('#sheet .doc-foot').outerHTML;const sel=[...document.querySelectorAll('#chips-clesson .chip.on')].map(c=>book.lessons[+c.dataset.cl].n);const rotulo=sel.length===1?'Lección '+sel[0]:'Lecciones '+sel[0]+'-'+sel[sel.length-1];const wrap=document.getElementById('calli-pages');wrap.style.setProperty('--box',box+'px');wrap.innerHTML=pages.map((gs,pi)=>'<div class="calli-page-wrap"><div class="a4-page calli-page">'+'<div class="calli-head">'+'<span class="title">Caligrafía · '+rotulo+' · '+chars.length+' kanji'+
 (pages.length>1?' · Página '+(pi+1)+'/'+pages.length:'')+'</span>'+'<span class="who-line">Nombre: ________________________________   Fecha: ____ / ____</span>'+'</div>'+'<div class="calli-rows">'+gs.map(g=>calliGroup(g.ch,opt)).join('')+'</div>'+
-footerHTML+'</div></div>').join('');layoutCalliPages();closeCalli();setCalli(true);toast(pages.length>1?'Hoja lista: '+pages.length+' páginas, imprímelas juntas':'Hoja lista para imprimir');}
+footerHTML+'</div></div>').join('');layoutCalliPages();closeCalli();setCalli(true);if(document.body.classList.contains('escribiendo'))tzcRearma();toast(pages.length>1?'Hoja lista: '+pages.length+' páginas, imprímelas juntas':'Hoja lista para imprimir');}
 function layoutCalliPages(){if(!calliOn)return;const stage=document.getElementById('stage');const{availW,availH}=pageAvailPx();const pad=8*MM_TO_PX;const naturalW=availW+pad*2,naturalH=availH+pad*2;const avail=stage.clientWidth-24;const scale=Math.max(0.2,Math.min(avail/naturalW,1.45));document.querySelectorAll('.calli-page-wrap').forEach(w=>{w.style.width=(naturalW*scale)+'px';w.style.height=(naturalH*scale)+'px';w.querySelector('.calli-page').style.transform='scale('+scale+')';});if(typeof ajustaCasillasEscribir==='function')ajustaCasillasEscribir();}
 document.getElementById('chips-clesson').addEventListener('click',e=>{const chip=e.target.closest('.chip');if(!chip)return;chip.classList.toggle('on');calliReport();});document.getElementById('chips-copts').addEventListener('click',e=>{const chip=e.target.closest('.chip');if(!chip)return;chip.classList.toggle('on');calliReport();});const EXAM_ITEMS=10;let examSorteo=null,examDe=-1,examSolOn=false;function barajaCon(semilla,arr){const a=arr.slice();let x=semilla||1;for(let i=a.length-1;i>0;i--){x=(x*1103515245+12345)&0x7fffffff;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]];}
 return a;}
@@ -405,6 +405,7 @@ h.alterna();}
 function tzcOtra(){if(tzcHoja)tzcHoja.otra();}
 function tzcSalta(){if(tzcHoja)tzcHoja.salta();}
 function tzcApaga(){if(tzcHoja)tzcHoja.apaga();}
+function tzcRearma(){if(!tzcHoja)return;tzcHoja.apaga();tzcHoja.enciende();}
 function tzcCompleta(ch,pts,primera,tipos){tzApunta(ch,pts,tipos);if(!primera)return;recordStat(ch,pts>=70);TZC_REFRESCA();}
 var Trazado=(function(){'use strict';var LADO=109;var MUESTRAS=32;var BASE=100;var SUELO=10;var INTENTOS=3;function penalizacion(trazos){if(!trazos)return 15;return Math.max(8,Math.min(15,Math.round(105/trazos)));}
 function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy);}
