@@ -335,7 +335,36 @@ if(e.key==='r'||e.key==='R')replayStrokes();return;}
 if(/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))return;if(e.key==='/'){e.preventDefault();const q=document.getElementById('find-q');q.focus();q.select();return;}
 if(e.key==='ArrowLeft')stepLesson(-1);if(e.key==='ArrowRight')stepLesson(1);});let fitTimer;function scheduleFit(){clearTimeout(fitTimer);fitTimer=setTimeout(fitAll,120);}
 window.addEventListener('resize',scheduleFit);const stageEl=document.getElementById('stage');let lastStageW=0;if('ResizeObserver'in window&&stageEl){new ResizeObserver(()=>{const w=stageEl.clientWidth;if(w===lastStageW)return;lastStageW=w;scheduleFit();}).observe(stageEl);}
-applyTheme();applyOrientation();applyCols();applyNumbers();applyGuides();applyVocab();applyRomaji();applyView();applyHeat();renderSrs();renderLessonPicker();renderSheet();paintIcons();leeEnlace();pintaEnlace();const DLG_IDS=['kanji-dlg','book-dlg','calli-dlg','game'];const FOCABLES='a[href],button:not([disabled]),input:not([disabled]),'+'select:not([disabled]),textarea:not([disabled]),'+'[tabindex]:not([tabindex="-1"])';let focoPrevio=null;function dlgAbierto(){return DLG_IDS.map(id=>document.getElementById(id)).find(d=>d&&!d.hidden)||null;}
+applyTheme();applyOrientation();applyCols();applyNumbers();applyGuides();applyVocab();applyRomaji();applyView();applyHeat();renderSrs();renderLessonPicker();renderSheet();paintIcons();const TOUR_CLAVE='kj_tour';const TOUR_ENLACE=location.search;const TOUR=[{tit:'Esto es una hoja por lección',txt:'Cada lección de tu temario cabe en <b>una hoja A4</b>. Lo que ves en '
++'pantalla es lo que sale por la impresora. Y todo lo que hagas se guarda '
++'<b>en este navegador</b>, sin cuentas ni registros.',mira:'l-select'},{tit:'Tres vistas de la misma lección',txt:'<b>Fichas</b> para estudiar, <b>Vocabulario</b> con las palabras de esos '
++'kanji, y <b>Examen</b>, que saca una hoja de examen ya hecha con sus '
++'soluciones aparte.',mira:'s-lesson',antes(){setCalli(false);}},{tit:'Pincha cualquier kanji',txt:'Se abre su ficha: el kanji <b>se dibuja solo</b>, trazo a trazo, con sus '
++'lecturas y las palabras que lo usan. Y abajo hay un recuadro para '
++'<b>escribirlo tú con el dedo</b>, que te corrige el orden y la dirección '
++'de cada trazo.',mira:'k-grid',antes(){setCalli(false);setView('lesson');},prueba:'Abrir una ficha',hacer(){const ch=Array.from(book.lessons[lesson].k)[0];if(ch)openKanji(ch);}},{tit:'Hojas de caligrafía, y escribir encima',txt:'<b>Caligrafía</b> genera hojas para practicar: una casilla por trazo hasta '
++'el kanji entero. Con la hoja delante, <b>Escribir</b> te deja rellenarlas '
++'con el dedo sin gastar papel; la hoja impresa sigue saliendo en blanco.',mira:'btn-calli',miraMovil:'seg-vista',antes(){closeKanji();}},{tit:'Jugar y repasar',txt:'<b>Jugar</b> pregunta significados, lecturas y vocabulario, también '
++'dibujando. Con lo que aciertas y fallas, <b>Repaso</b> te dice cada día qué '
++'kanji te toca volver a ver: <b>repaso espaciado</b>, sin llevar tú la cuenta.',mira:'btn-srs'},{tit:'«Mi libro»: tu temario y tu vocabulario',txt:'La app <b>no trae ningún temario</b>: de fábrica reparte por nivel JLPT solo '
++'para arrancar llena. En <b>Mi libro</b> escribes tus lecciones, y en su '
++'segunda pestaña, <b>el vocabulario de tu clase</b> para que te lo pregunte.',mira:'btn-libro',prueba:'Abrir Mi libro',hacer(){openBook();}},{tit:'Guarda una copia de vez en cuando',txt:'Como todo vive en este navegador, si lo borras o cambias de ordenador '
++'empiezas de cero. <b>Copia</b> baja un archivo con tus lecciones, tu '
++'vocabulario y tu progreso, y <b>Cargar</b> lo devuelve. Es el único seguro '
++'que hay.',mira:'btn-copia'}];let tourPaso=0;function tourMovil(){return!!(window.matchMedia&&window.matchMedia('(max-width:760px)').matches);}
+function tourElemento(i){const paso=TOUR[i];if(!paso||!paso.mira)return null;const id=(tourMovil()&&paso.miraMovil)?paso.miraMovil:paso.mira;return document.getElementById(id);}
+function tourQuitaFoco(){document.querySelectorAll('.tour-foco').forEach(e=>e.classList.remove('tour-foco'));}
+function tourPinta(){const paso=TOUR[tourPaso];if(!paso)return;if(paso.antes)try{paso.antes();}catch(e){}
+document.getElementById('tour-paso').textContent=(tourPaso+1)+' de '+TOUR.length;document.getElementById('tour-tit').textContent=paso.tit;document.getElementById('tour-txt').innerHTML=paso.txt;document.getElementById('tour-puntos').innerHTML=TOUR.map((_,i)=>'<i class="'+(i===tourPaso?'on':'')+'"></i>').join('');document.getElementById('tour-antes').disabled=tourPaso===0;const sig=document.getElementById('tour-sig');sig.textContent=tourPaso===TOUR.length-1?'Listo':'Siguiente';const viejo=document.getElementById('tour-prueba');if(viejo)viejo.remove();if(paso.prueba){const b=document.createElement('button');b.id='tour-prueba';b.type='button';b.textContent=paso.prueba;b.onclick=()=>{try{paso.hacer();}catch(e){}};sig.parentNode.insertBefore(b,sig);}
+tourQuitaFoco();const el=tourElemento(tourPaso);if(el){const enCajon=!!(el.closest&&el.closest('#tools'));const abierto=document.body.classList.contains('menu-abierto');if(tourMovil()&&enCajon!==abierto)toggleMenu();}
+if(el&&el.offsetParent!==null){el.classList.add('tour-foco');const r=el.getBoundingClientRect();if(r.top<70||r.bottom>window.innerHeight-190){const suave=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);el.scrollIntoView({block:'center',behavior:suave?'smooth':'auto'});}}}
+function tourAbre(){if(typeof tzcApaga==='function')tzcApaga();if(typeof closeKanji==='function')closeKanji();if(typeof closeKana==='function')closeKana();tourPaso=0;document.getElementById('tour').hidden=false;tourPinta();}
+function tourVa(d){const n=tourPaso+d;if(n<0)return;if(n>=TOUR.length){tourCierra();toast('Ya está. El botón sigue ahí por si quieres repetirlo');return;}
+tourPaso=n;tourPinta();}
+function tourCierra(){tourQuitaFoco();document.getElementById('tour').hidden=true;LS.set(TOUR_CLAVE,'1');}
+function tourPrimeraVez(){if(LS.get(TOUR_CLAVE))return;if(TOUR_ENLACE&&/kanji=|leccion=/.test(TOUR_ENLACE)){LS.set(TOUR_CLAVE,'1');return;}
+setTimeout(()=>{if(!LS.get(TOUR_CLAVE))tourAbre();},700);}
+leeEnlace();pintaEnlace();tourPrimeraVez();const DLG_IDS=['kanji-dlg','book-dlg','calli-dlg','game'];const FOCABLES='a[href],button:not([disabled]),input:not([disabled]),'+'select:not([disabled]),textarea:not([disabled]),'+'[tabindex]:not([tabindex="-1"])';let focoPrevio=null;function dlgAbierto(){return DLG_IDS.map(id=>document.getElementById(id)).find(d=>d&&!d.hidden)||null;}
 function focosDe(dlg){return[...dlg.querySelectorAll(FOCABLES)].filter(el=>el.offsetParent!==null);}
 document.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const dlg=dlgAbierto();if(!dlg)return;const f=focosDe(dlg);if(!f.length)return;const primero=f[0],ultimo=f[f.length-1];if(!dlg.contains(document.activeElement)){e.preventDefault();(e.shiftKey?ultimo:primero).focus();return;}
 if(e.shiftKey&&document.activeElement===primero){e.preventDefault();ultimo.focus();}
