@@ -72,7 +72,7 @@
     </div>
     <div class="tools" id="tools">
       <button class="cajon-cerrar" onclick="toggleMenu()">Opciones<span aria-hidden="true">✕</span></button>
-      <div class="seg">
+      <div class="seg" id="seg-modos">
         <button id="m-view" class="on" onclick="setMode('view')"><span class="ico" data-icon="eye"></span>Ver</button>
         <button id="m-edit" onclick="setMode('edit')"><span class="ico" data-icon="pencil"></span>Editar</button>
         <button id="m-practice" onclick="setMode('practice')"><span class="ico" data-icon="target"></span>Practicar</button>
@@ -80,7 +80,7 @@
       <button class="btn oculto-movil" id="btn-calli" onclick="calliButton()" title="Hoja de práctica de escritura"><span class="ico" data-icon="brush"></span><span id="v-calli">Caligrafía</span></button>
         <button class="btn" id="btn-escribir" onclick="tzcAlterna()" title="Escribe en las casillas de la hoja con el dedo; la hoja impresa no cambia"><span class="ico" data-icon="brush"></span><span id="v-escribir">Escribir</span></button>
       <button class="btn btn-heat" id="btn-heat" onclick="toggleHeat()" title="Colorea la tabla según cómo llevas cada carácter"><span class="ico" data-icon="heat"></span>Progreso</button>
-      <button class="btn btn-play" onclick="openGame()" title="Practicar lectura escribiendo el rōmaji"><span class="ico" data-icon="gamepad"></span>Jugar</button>
+      <button class="btn btn-play" id="btn-jugar" onclick="openGame()" title="Practicar lectura escribiendo el rōmaji"><span class="ico" data-icon="gamepad"></span>Jugar</button>
       <button class="btn" id="btn-tour" onclick="tourAbre()" title="Un recorrido corto por lo que sabe hacer la app"><span class="ico" data-icon="check"></span>Primeros pasos</button>
       <div class="grupo-movil">
         <span class="grupo-tit">Vista</span>
@@ -662,17 +662,18 @@ const TZC_HECHO=ch=>kanaSVG(ch,{});const TZC_REFRESCA=()=>renderAll();const TOUR
 +'sale por la impresora. Todo lo que hagas se guarda <b>en este navegador</b>, '
 +'sin cuentas ni registros.',mira:'sheet'},{tit:'Ver, editar y practicar',txt:'<b>Ver</b> es la tabla normal. <b>Editar</b> te deja cambiar las notas de '
 +'cada casilla. <b>Practicar</b> tapa el rōmaji para que lo digas tú antes de '
-+'destaparlo.',mira:'m-view'},{tit:'Pincha cualquier kana',txt:'Se abre su ficha y el carácter <b>se dibuja solo</b>, trazo a trazo, con su '
++'destaparlo.',mira:'seg-modos'},{tit:'Pincha cualquier kana',txt:'Se abre su ficha y el carácter <b>se dibuja solo</b>, trazo a trazo, con su '
 +'lectura. Y abajo tienes un recuadro para <b>escribirlo tú con el dedo</b>: te '
 +'corrige el orden y la dirección de cada trazo, y puedes pedirle que te lo '
-+'enseñe para calcarlo.',mira:'g-hira',prueba:'Abrir una ficha',hacer(){openKana('\u3042');}},{tit:'Hojas de caligrafía, y escribir encima',txt:'<b>Caligrafía</b> genera hojas para practicar, con la opción de una casilla '
++'enseñe para calcarlo.',sel:'#g-hira .kana-cell',mira:'g-hira',prueba:'Abrir una ficha',hacer(){openKana('\u3042');}},{tit:'Hojas de caligrafía, y escribir encima',txt:'<b>Caligrafía</b> genera hojas para practicar, con la opción de una casilla '
 +'por trazo. Con la hoja delante, <b>Escribir</b> te deja rellenarlas con el dedo '
-+'sin gastar papel; la hoja impresa sigue saliendo en blanco.',mira:'btn-calli',miraMovil:'seg-vista'},{tit:'Jugar y ver por dónde vas',txt:'<b>Jugar</b> te pregunta la lectura, y también <b>dibujando el kana</b>. Con lo '
-+'que aciertas y fallas, <b>Progreso</b> colorea la tabla para que veas de un '
-+'vistazo lo que llevas bien y lo que no.',mira:'btn-heat'},{tit:'Guarda una copia de vez en cuando',txt:'Como todo vive en este navegador, si lo borras o cambias de ordenador '
++'sin gastar papel; la hoja impresa sigue saliendo en blanco.',mira:'btn-calli',miraMovil:'seg-vista'},{tit:'Jugar para practicar',txt:'Te pregunta la lectura de cada kana, y también <b>dibujándolo con el dedo</b>. '
++'Puedes elegir qué filas y qué silabario entran.',mira:'btn-jugar'},{tit:'Y ves por dónde vas',txt:'Con lo que aciertas y fallas, <b>Progreso</b> colorea la tabla entera para que '
++'veas de un vistazo lo que llevas bien y lo que se te resiste.',mira:'btn-heat'},{tit:'Guarda una copia de vez en cuando',txt:'Como todo vive en este navegador, si lo borras o cambias de ordenador '
 +'empiezas de cero. <b>Copia</b> baja un archivo con tu tabla y tu progreso, y '
 +'<b>Cargar</b> lo devuelve. Es el único seguro que hay.',mira:'btn-copia'}];let tourPaso=0;function tourMovil(){return!!(window.matchMedia&&window.matchMedia('(max-width:760px)').matches);}
-function tourElemento(i){const paso=TOUR[i];if(!paso||!paso.mira)return null;const id=(tourMovil()&&paso.miraMovil)?paso.miraMovil:paso.mira;return document.getElementById(id);}
+function tourElemento(i){const paso=TOUR[i];if(!paso)return null;if(paso.sel){const el=document.querySelector(paso.sel);if(el)return el;}
+if(!paso.mira)return null;const id=(tourMovil()&&paso.miraMovil)?paso.miraMovil:paso.mira;return document.getElementById(id);}
 function tourQuitaFoco(){document.querySelectorAll('.tour-foco').forEach(e=>e.classList.remove('tour-foco'));}
 function tourPinta(){const paso=TOUR[tourPaso];if(!paso)return;if(paso.antes)try{paso.antes();}catch(e){}
 document.getElementById('tour-paso').textContent=(tourPaso+1)+' de '+TOUR.length;document.getElementById('tour-tit').textContent=paso.tit;document.getElementById('tour-txt').innerHTML=paso.txt;document.getElementById('tour-puntos').innerHTML=TOUR.map((_,i)=>'<i class="'+(i===tourPaso?'on':'')+'"></i>').join('');document.getElementById('tour-antes').disabled=tourPaso===0;const sig=document.getElementById('tour-sig');sig.textContent=tourPaso===TOUR.length-1?'Listo':'Siguiente';const viejo=document.getElementById('tour-prueba');if(viejo)viejo.remove();if(paso.prueba){const b=document.createElement('button');b.id='tour-prueba';b.type='button';b.textContent=paso.prueba;b.onclick=()=>{try{paso.hacer();}catch(e){}};sig.parentNode.insertBefore(b,sig);}
