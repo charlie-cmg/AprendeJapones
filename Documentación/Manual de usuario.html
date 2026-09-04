@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>Manual de uso — Silabario y Kanji</title>
+<meta name="description" content="Manual de uso de Silabario Japonés y Kanji · trazos: cómo se abren, qué hace cada botón, cómo se imprimen las hojas, las licencias y el aviso legal.">
+<meta name="author" content="Carlos Mesonero García">
+<link rel="canonical" href="https://charlie-cmg.github.io/AprendeJapones/Documentaci%C3%B3n/Manual%20de%20usuario.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e11d48'/%3E%3Ctext x='32' y='46' font-size='36' font-family='sans-serif' font-weight='bold' text-anchor='middle' fill='white'%3E%E3%81%82%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+/* Tokens: los mismos de index.html, recortados a lo que usa una pagina de
+   texto. Si alli cambia la paleta, aqui hay que traerla a mano. */
+:root{
+  --bg:#e9edf4; --card:#ffffff; --line:#e2e8f0;
+  --ink:#0f172a; --ink-soft:#64748b;
+  --acc:#0369a1; --acc-fuerte:#075985; --acc-suave:#f2fafe;
+  --fila:#f8fafc;
+  --nota-bg:#fffcf0; --nota-line:#fae6b0;
+  --info-bg:#eaf3fb; --info-line:#9cc3e5;
+  --ojo-bg:#fdecea;  --ojo-line:#e6a9a0;
+  --sombra:0 10px 30px -18px rgba(15,23,42,.35);
+}
+body.theme-dark{
+  --bg:#060910; --card:#101728; --line:#22304b;
+  --ink:#f1f5f9; --ink-soft:#94a3b8;
+  --acc:#38bdf8; --acc-fuerte:#7dd3fc; --acc-suave:#0b1a29;
+  --fila:#141c2e;
+  --nota-bg:#1d1708; --nota-line:#5a3b0c;
+  --info-bg:#0b1a29; --info-line:#1a4763;
+  --ojo-bg:#20131c;  --ojo-line:#4d1c2e;
+  --sombra:0 10px 30px -18px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Inter','Noto Sans JP','Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;
+  line-height:1.65; -webkit-font-smoothing:antialiased;
+}
+a{color:var(--acc-fuerte)}
+/* La URL de la licencia es mas larga que un movil: que parta donde sea antes
+   de sacar la pagina de su sitio. */
+article a{overflow-wrap:anywhere}
+
+/* ---- barra ---- */
+.barra{
+  position:sticky; top:0; z-index:5;
+  display:flex; align-items:center; gap:12px;
+  padding:10px 20px; background:var(--card);
+  border-bottom:1px solid var(--line);
+}
+.barra .vuelta{font-weight:600; text-decoration:none; font-size:14px}
+.barra .hueco{flex:1}
+.barra button,.barra .btn{
+  font:inherit; font-size:13px; font-weight:600;
+  color:var(--ink); background:transparent;
+  border:1px solid var(--line); border-radius:8px;
+  padding:6px 12px; cursor:pointer; text-decoration:none;
+}
+.barra button:hover,.barra .btn:hover{border-color:var(--acc)}
+
+/* ---- armazon ---- */
+.marco{
+  max-width:1120px; margin:0 auto; padding:28px 20px 80px;
+  display:grid; grid-template-columns:230px minmax(0,1fr); gap:36px; align-items:start;
+}
+nav.indice{position:sticky; top:70px; font-size:14px}
+nav.indice h2{
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-soft); margin-bottom:10px;
+}
+nav.indice ol{list-style:none; margin:0}
+nav.indice a{
+  display:block; padding:5px 10px; border-radius:8px;
+  text-decoration:none; color:var(--ink-soft); border-left:2px solid transparent;
+}
+nav.indice a:hover{color:var(--ink); background:var(--card)}
+nav.indice a.aqui{color:var(--acc-fuerte); border-left-color:var(--acc); background:var(--card)}
+
+article{
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  box-shadow:var(--sombra); padding:44px clamp(20px,5vw,56px);
+  /* Sin esto, la tabla ancha de dentro estira la columna de la rejilla y la
+     pagina entera se va a la derecha en el movil: el minimo de un elemento
+     de rejilla es su contenido salvo que se diga lo contrario. */
+  min-width:0;
+}
+
+/* ---- texto ---- */
+h1{
+  font-size:clamp(30px,6vw,44px); line-height:1.15; font-weight:800;
+  color:var(--acc-fuerte); text-align:center; margin-bottom:.4em;
+}
+h2{
+  font-size:clamp(22px,3.4vw,28px); font-weight:700; color:var(--acc-fuerte);
+  margin:2.2em 0 .6em; padding-bottom:.25em; border-bottom:2px solid var(--acc);
+  scroll-margin-top:76px;
+}
+h3{font-size:1.12em; font-weight:700; color:var(--acc); margin:1.6em 0 .4em}
+h4{font-size:1em; font-weight:700; margin:1.2em 0 .3em}
+p{margin-bottom:.5em}
+.centro{text-align:center}
+.subrayado{border-bottom:1px solid var(--line); padding-bottom:.3em}
+ul,ol{margin:.2em 0 1em 1.4em}
+li{margin-bottom:.25em}
+code{
+  font-family:'Consolas','Menlo',monospace; font-size:.92em;
+  background:var(--acc-suave); color:var(--acc-fuerte);
+  padding:1px 5px; border-radius:5px;
+}
+hr.salto{border:0; border-top:1px solid var(--line); margin:2.4em 0 0}
+pre.ejemplo{
+  font-family:'Consolas','Menlo',monospace; font-size:.9em; line-height:1.7;
+  background:var(--acc-suave); color:var(--ink);
+  border:1px solid var(--line); border-radius:10px;
+  padding:12px 14px; margin:.6em 0 1.2em; overflow-x:auto;
+}
+
+/* ---- tablas: en movil se deslizan en vez de reventar la caja ---- */
+.tabla{overflow-x:auto; margin:.6em 0 1.2em; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; min-width:420px; font-size:.95em}
+th{
+  background:var(--acc-fuerte); color:#fff; font-weight:600;
+  text-align:left; padding:9px 12px;
+}
+body.theme-dark th{color:#0f172a}
+td{border:1px solid var(--line); padding:9px 12px; vertical-align:top}
+tbody tr:nth-child(even) td{background:var(--fila)}
+
+/* ---- avisos ---- */
+.aviso{border:1px solid; border-radius:12px; padding:14px 18px; margin:1em 0 1.3em}
+.aviso.nota{background:var(--nota-bg); border-color:var(--nota-line)}
+.aviso.info{background:var(--info-bg); border-color:var(--info-line)}
+.aviso.ojo {background:var(--ojo-bg);  border-color:var(--ojo-line)}
+
+@media (max-width:860px){
+  .marco{grid-template-columns:minmax(0,1fr); gap:20px; padding-top:18px}
+  nav.indice{position:static}
+  nav.indice ol{display:flex; flex-wrap:wrap; gap:6px}
+  nav.indice a{border-left:0; border:1px solid var(--line); background:var(--card)}
+  article{padding:26px 20px; border-radius:12px}
+}
+/* En el movil la barra tiene que caber en una linea: si se parte en dos, el
+   titulo de la seccion a la que saltas se queda debajo y no se ve. */
+@media (max-width:520px){
+  .barra{padding:8px 12px; gap:8px}
+  .barra .vuelta{font-size:13px; white-space:nowrap}
+  .barra button,.barra .btn{padding:5px 9px; font-size:12px; white-space:nowrap}
+}
+
+/* ---- papel ---- */
+@media print{
+  body{background:#fff}
+  .barra,nav.indice{display:none}
+  .marco{display:block; max-width:none; padding:0}
+  article{border:0; box-shadow:none; padding:0; background:#fff}
+  hr.salto{border:0; break-after:page; page-break-after:always; margin:0}
+  h2{break-after:avoid; page-break-after:avoid}
+  tr,.aviso{break-inside:avoid; page-break-inside:avoid}
+  .tabla{overflow:visible}
+  table{min-width:0}
+}
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="vuelta" href="../index.html">&#8592; Aprende Japon&eacute;s</a>
+  <span class="hueco"></span>
+  <a class="btn" href="Manual%20de%20usuario.docx" download>Bajar en Word</a>
+  <button type="button" id="tema">Oscuro</button>
+</header>
+<div class="marco">
+<nav class="indice" aria-label="Contenido del manual">
+  <h2>Contenido</h2>
+  <ol><li><a href="#que-hay-en-este-manual">Qué hay en este manual</a></li><li><a href="#antes-de-empezar">1. Antes de empezar</a></li><li><a href="#silabario-japones">2. Silabario Japonés</a></li><li><a href="#kanji-trazos">3. Kanji · trazos</a></li><li><a href="#imprimir-bien">4. Imprimir bien</a></li><li><a href="#atajos-de-teclado">5. Atajos de teclado</a></li><li><a href="#si-algo-va-mal">6. Si algo va mal</a></li><li><a href="#creditos-licencias-y-aviso-legal">7. Créditos, licencias y aviso legal</a></li></ol>
+</nav>
+<article>
+<h1>Manual de uso</h1>
+<p class="centro" style="margin-bottom:0.17em"><strong>Silabario Japonés</strong> y <strong>Kanji · trazos</strong></p>
+<p class="centro" style="margin-bottom:2.50em">Dos aplicaciones para estudiar japonés en clase</p>
+<p class="centro" style="margin-bottom:0.17em">Carlos Mesonero García</p>
+<p class="centro">Agosto de 2026</p>
+<hr class="salto">
+<h2 id="que-hay-en-este-manual">Qué hay en este manual</h2>
+<ul>
+<li><strong>1. Antes de empezar</strong> — qué son, cómo se abren y dónde se guardan tus cosas</li>
+<li><strong>2. Silabario</strong> — tabla, trazos, caligrafía y juego de kana</li>
+<li><strong>3. Kanji</strong> — fichas, vocabulario, examen, caligrafía, juego y repaso</li>
+<li><strong>4. Imprimir bien</strong> — lo que hay que tocar en el diálogo de impresión</li>
+<li><strong>5. Atajos de teclado</strong></li>
+<li><strong>6. Si algo va mal</strong></li>
+<li><strong>7. Créditos, licencias y aviso legal</strong> — qué llevan dentro las apps, qué puedes hacer con ellas y qué se pide a cambio</li>
+</ul>
+<hr class="salto">
+<h2 id="antes-de-empezar">1. Antes de empezar</h2>
+<aside class="aviso nota"><strong>¿Prisa?</strong> Las dos apps traen un botón <strong>«Primeros pasos»</strong> que te enseña lo principal en un minuto, señalando cada cosa en la propia pantalla. Se abre solo la primera vez que entras; luego, cuando lo pidas. Este manual es lo mismo pero con calma y por escrito.</aside>
+<p>Son <strong>dos archivos independientes</strong>. Cada uno es una aplicación entera: no hay que instalar nada, ni registrarse, ni tener conexión.</p>
+<div class="tabla"><table>
+<colgroup><col style="width:35.5%"><col style="width:64.5%"></colgroup>
+<thead><tr><th>Archivo</th><th>Para qué sirve</th></tr></thead>
+<tbody>
+<tr><td><code>silabario.html</code></td><td>Hiragana y katakana: tabla imprimible, trazos animados, hoja de caligrafía y juego de lectura.</td></tr>
+<tr><td><code>kanji-trazos.html</code></td><td>1.306 kanji: fichas por lección, vocabulario, caligrafía, examen imprimible, buscador, repaso espaciado y juego. Las lecciones las pones tú.</td></tr>
+</tbody>
+</table></div>
+<h3>Cómo se abren</h3>
+<p><strong>Doble clic</strong> en el archivo. Se abre en tu navegador (Chrome, Edge, Firefox…) y ya puedes usarlo. Si tu ordenador te pregunta con qué programa abrirlo, elige cualquier navegador.</p>
+<p>Lo único que se descarga de internet son las tipografías, para que se vea más bonito. Sin conexión funciona igual, con las letras de tu sistema.</p>
+<h3>Dónde se guardan tus datos</h3>
+<p>Todo lo que haces —el progreso del juego, tus notas, tus ajustes— se guarda <strong>en tu navegador, en tu ordenador</strong>. No se envía nada a ningún servidor y nadie más lo ve. Eso tiene dos consecuencias prácticas:</p>
+<ul>
+<li>si borras los datos de navegación, <strong>se borra tu progreso</strong>;</li>
+<li>si abres el archivo en otro ordenador o en otro navegador, empiezas de cero.</li>
+</ul>
+<aside class="aviso nota"><strong>Haz copias.</strong> El botón <strong>Copia</strong> baja un archivo con tus cosas y <strong>Cargar</strong> lo restaura. En la app de kanji esa copia incluye también el progreso del juego, que es lo único que no se puede rehacer a mano.</aside>
+<hr class="salto">
+<h2 id="silabario-japones">2. Silabario Japonés</h2>
+<p>La pantalla tiene dos partes: la <strong>barra</strong> de arriba, que no se imprime, y la <strong>hoja</strong>, que es literalmente lo que va a salir por la impresora. Lo que ves es lo que se imprime, a tamaño real de A4.</p>
+<h3>2.1. Los tres modos de la tabla</h3>
+<div class="tabla"><table>
+<colgroup><col style="width:19.9%"><col style="width:80.1%"></colgroup>
+<thead><tr><th>Botón</th><th>Qué hace</th></tr></thead>
+<tbody>
+<tr><td>Ver</td><td>La tabla normal, para consultar o imprimir.</td></tr>
+<tr><td>Editar</td><td>Puedes cambiar cualquier casilla y las notas del pie. Lo que escribas se guarda y el juego preguntará TU versión.</td></tr>
+<tr><td>Practicar</td><td>Oculta el rōmaji para que intentes leer solo con el kana.</td></tr>
+</tbody>
+</table></div>
+<p>Al lado tienes <strong>Rōmaji</strong> (arriba, al lado o apagado), <strong>Notas</strong> (muestra u oculta las notas del pie), <strong>Vertical/Apaisado</strong>, <strong>Papel</strong> y el tema <strong>Claro/Oscuro/Kawaii</strong>. El tema oscuro se imprime en claro salvo que pongas «Papel: oscuro».</p>
+<h3>2.2. Ver cómo se escribe un kana</h3>
+<p><strong>Pincha cualquier kana de la tabla.</strong> Se abre su ficha y el carácter se dibuja solo, trazo a trazo.</p>
+<ul>
+<li><strong>Lenta / Normal / Rápida</strong> cambia la velocidad.</li>
+<li><strong>Trazo +1</strong> avanza un solo trazo, para ir parando.</li>
+<li><strong>Escuchar</strong> lo pronuncia, si tu ordenador tiene voz japonesa instalada.</li>
+<li>Las flechas <strong>‹ ›</strong> pasan al kana anterior o siguiente.</li>
+</ul>
+<h3>2.3. Hoja de caligrafía</h3>
+<p>Botón <strong>Caligrafía</strong>. Eliges silabario, qué filas quieres y cuántas casillas, y te genera hojas para practicar la escritura a mano. Si pides más caracteres de los que caben, hace las páginas que hagan falta.</p>
+<p>El interruptor importante es <strong>«Progresivas: un trazo por casilla»</strong>:</p>
+<ul>
+<li><strong>encendido</strong>: la primera casilla trae el trazo 1, la segunda los trazos 1 y 2, la tercera 1-2-3… hasta el carácter entero. Después, dos casillas tenues para calcar y el resto en blanco. Es la forma de aprender el orden de trazos.</li>
+<li><strong>apagado</strong>: la fila clásica, con dos modelos tenues al principio y el resto en blanco.</li>
+</ul>
+<h3>2.4. El juego</h3>
+<p>Botón <strong>Jugar</strong>. Tres formas de preguntar:</p>
+<div class="tabla"><table>
+<colgroup><col style="width:24.4%"><col style="width:28.8%"><col style="width:46.8%"></colgroup>
+<thead><tr><th>Modo</th><th>Te sale</th><th>Contestas</th></tr></thead>
+<tbody>
+<tr><td>Leer el kana</td><td>un carácter</td><td>escribes su rōmaji</td></tr>
+<tr><td>Elegir el kana</td><td>un rōmaji</td><td>eliges el carácter entre cuatro (teclas 1 a 4)</td></tr>
+<tr><td>Palabras</td><td>una palabra escrita en kana</td><td>escribes cómo se lee; al resolver aparece qué significa</td></tr>
+</tbody>
+</table></div>
+<p>Antes de empezar eliges <strong>qué entra</strong> (básico, dakuten, combinaciones, especiales), <strong>qué silabario</strong>, el <strong>orden</strong> (priorizando tus fallos o al azar) y <strong>cuántas preguntas</strong>.</p>
+<ul>
+<li>Se aceptan las dos romanizaciones: <code>shi</code> o <code>si</code>, <code>tsu</code> o <code>tu</code>, <code>fu</code> o <code>hu</code>…</li>
+<li>Tienes <strong>dos intentos</strong>. El primer fallo avisa pero no te da la solución.</li>
+<li>Acertar a la primera mantiene la racha; a la segunda cuenta, pero ese carácter va a la lista de repaso.</li>
+<li>Al terminar puedes <strong>repetir solo los fallos</strong>.</li>
+</ul>
+<p>El botón <strong>Progreso</strong> colorea la tabla según cómo llevas cada kana: verde dominado, ámbar dudoso, rojo flojo. Ese color <strong>no se imprime</strong>.</p>
+<hr class="salto">
+<h2 id="kanji-trazos">3. Kanji · trazos</h2>
+<p>Misma idea: barra arriba, hoja A4 debajo, y <strong>una hoja por lección</strong>. Arriba a la izquierda eliges la lección con <strong>‹ ›</strong> o con la lista desplegable.</p>
+<h3>3.1. El buscador</h3>
+<p>El campo <strong>Buscar</strong> encuentra cualquiera de los 1.306 kanji y de las 8.855 palabras. Puedes buscar de cuatro maneras, la que tengas a mano:</p>
+<div class="tabla"><table>
+<colgroup><col style="width:33.2%"><col style="width:66.8%"></colgroup>
+<thead><tr><th>Escribes</th><th>Encuentra</th></tr></thead>
+<tbody>
+<tr><td>山  ·  地下鉄</td><td>el kanji o la palabra directamente</td></tr>
+<tr><td>やまだ  ·  けっこん</td><td>por su lectura en kana</td></tr>
+<tr><td>chikatetsu  ·  tokyo</td><td>por rōmaji (vale tokyo, toukyou o tōkyō)</td></tr>
+<tr><td>lavadora  ·  boda</td><td>por el significado en castellano</td></tr>
+</tbody>
+</table></div>
+<p>Al elegir un resultado, la hoja <strong>salta a su lección</strong> y se abre su ficha, con la palabra buscada resaltada. Cada resultado lleva su etiqueta de lección (L25), que suele ser justo lo que uno quiere saber. Atajo: la tecla <strong>/</strong> te lleva al buscador.</p>
+<h3>3.2. Las tres vistas de la hoja</h3>
+<div class="tabla"><table>
+<colgroup><col style="width:19.9%"><col style="width:80.1%"></colgroup>
+<thead><tr><th>Botón</th><th>Qué imprime</th></tr></thead>
+<tbody>
+<tr><td>Fichas</td><td>Una tarjeta por kanji: el carácter, su diagrama de trazos numerado, las lecturas ON y KUN en kana y en rōmaji, el significado, los trazos y el nivel.</td></tr>
+<tr><td>Vocabulario</td><td>Todas las palabras de la lección: kanji, palabra, lectura, rōmaji y significado.</td></tr>
+<tr><td>Examen</td><td>Un examen para hacer a mano, con sus soluciones.</td></tr>
+</tbody>
+</table></div>
+<p>En la vista de <strong>Fichas</strong> tienes además cuatro interruptores: <strong>Ejemplos</strong> (añade palabras del libro a cada tarjeta), <strong>Números</strong> (el orden sobre cada trazo), <strong>Guías</strong> (la cruz dentro del recuadro) y <strong>1 o 2 columnas</strong>.</p>
+<h3>3.3. Ver cómo se escribe un kanji</h3>
+<p><strong>Pincha cualquier tarjeta.</strong> Se abre la ficha del kanji: se dibuja trazo a trazo, con todas sus lecturas, su significado y todas las palabras del libro que lo usan.</p>
+<ul>
+<li>Flechas <strong>‹ ›</strong> o <strong>← →</strong>: kanji anterior y siguiente de la lección.</li>
+<li><strong>Barra espaciadora</strong>: un trazo más. <strong>R</strong>: repetir la animación.</li>
+<li>Debajo del lienzo tienes la tira con el kanji paso a paso.</li>
+</ul>
+<h4>Dibújalo tú</h4>
+<p>Debajo de la tira hay un recuadro para <strong>escribir el kanji con el dedo</strong> (o con el ratón). Empiezas con 100 puntos y cada fallo resta; la app te dice si te has saltado el <strong>orden</strong>, si has hecho un trazo <strong>al revés</strong> o si la <strong>forma</strong> no era esa, y te marca por dónde empieza el trazo que toca.</p>
+<p>El interruptor de al lado tiene dos posiciones:</p>
+<ul>
+<li><strong>Prueba libre</strong> — el lienzo en blanco. Es como va por defecto.</li>
+<li><strong>Enséñame</strong> — te pinta debajo el trazo que toca, en gris, para que lo calques encima, con el punto de salida y la flecha del final.</li>
+</ul>
+<aside class="aviso nota">Lo que calcas en <strong>Enséñame</strong> no cuenta para tu progreso. Es a propósito: copiando se sacan cien puntos siempre, y si contara, el «aquí sueles saltarte el orden» de la ficha se lo estaría inventando.</aside>
+<h3>3.4. Hoja de caligrafía</h3>
+<p>Botón <strong>Caligrafía</strong>. Igual que en el silabario pero por lecciones: una casilla por trazo (primero el 1, luego 1-2, luego 1-2-3…) hasta el kanji entero, y el resto de la fila para repetir. Un kanji nunca se parte entre dos hojas.</p>
+<p>Con la hoja delante, el botón <strong>Escribir</strong> la vuelve escribible: las casillas vacías crecen y puedes rellenarlas con el dedo, una a una, sin imprimir nada. Lo que escribes se queda pintado en su casilla con su puntuación, así que la hoja se va llenando en pantalla.</p>
+<p>En la barra de abajo, <strong>Borrar</strong> limpia la casilla y te deja en ella; <strong>Saltar</strong> la deja en blanco y te lleva a la siguiente (vuelve a ofrecértela más adelante, al dar la vuelta a la hoja); <strong>Terminar</strong> sale del modo.</p>
+<aside class="aviso nota"><strong>La hoja impresa no cambia.</strong> Todo esto vive solo en la pantalla: si le das a imprimir, sale la hoja en blanco de siempre para rellenarla a boli.</aside>
+<h3>3.5. El juego</h3>
+<p>Botón <strong>Jugar</strong>. Ocho formas de preguntar:</p>
+<div class="tabla"><table>
+<colgroup><col style="width:29.9%"><col style="width:27.7%"><col style="width:42.4%"></colgroup>
+<thead><tr><th>Modo</th><th>Te sale</th><th>Contestas</th></tr></thead>
+<tbody>
+<tr><td>Kanji → significado</td><td>el kanji</td><td>eliges el significado entre 4</td></tr>
+<tr><td>Significado → kanji</td><td>el significado</td><td>eliges el kanji entre 4</td></tr>
+<tr><td>Lectura del kanji</td><td>el kanji</td><td>escribes una lectura en rōmaji (on o kun)</td></tr>
+<tr><td>Palabras: cómo se leen</td><td>una palabra</td><td>escribes su lectura</td></tr>
+<tr><td>Palabra → significado</td><td>una palabra</td><td>eliges qué significa entre 4</td></tr>
+<tr><td>Significado → palabra</td><td>un significado</td><td>eliges la palabra entre 4</td></tr>
+<tr><td>Examen: escribir el kanji</td><td>la lectura y el significado</td><td>arrastras el kanji a su hueco</td></tr>
+<tr><td>Examen: leer el kanji</td><td>la palabra en kanji</td><td>arrastras su lectura, trozo a trozo</td></tr>
+</tbody>
+</table></div>
+<p>Eliges <strong>qué lecciones entran</strong> (hay atajos: solo la actual, hasta la actual, todas), el orden y cuántas preguntas. Las lecturas se escriben en rōmaji y se aceptan las variantes normales: <code>kyō</code>, <code>kyou</code> o <code>kyo</code>.</p>
+<aside class="aviso nota"><strong>Los dos modos de examen copian el examen de clase</strong>, y respetan su regla más importante: si una palabra lleva un kanji que todavía no has dado, <strong>no se te pregunta</strong> — aparece ya escrito y con su significado, y solo tienes que poner los que sí has visto.</aside>
+<p>El botón <strong>Progreso</strong> colorea las fichas según cómo llevas cada kanji. El progreso se lleva <strong>por kanji</strong>, así que acertar 日曜日 cuenta para 日.</p>
+<h3>3.6. Repaso: qué te toca hoy</h3>
+<p>El botón <strong>Repaso</strong> de la barra lleva un número: los kanji que te tocan hoy.</p>
+<p>Funciona con cajas: cuando aciertas un kanji, sube de caja y no vuelve a salir hasta pasados 1, 2, 4, 7, 15, 30 o 60 días, según la caja en la que esté. Si fallas, vuelve a la primera y te toca hoy mismo, hasta que salga bien.</p>
+<ul>
+<li>Pulsa <strong>Repaso</strong> y se abre el juego solo con lo que toca.</li>
+<li>Dentro del juego, el chip <strong>«Solo lo que toca hoy»</strong> hace lo mismo sin salir.</li>
+<li>Si pone 0, no tienes nada pendiente: has terminado por hoy.</li>
+</ul>
+<h3>3.7. El examen imprimible</h3>
+<p>Botón <strong>Examen</strong>. Saca una hoja con las dos partes del examen de clase:</p>
+<ul>
+<li><strong>1 · Escribe el kanji</strong> — te dan la lectura y el significado, y tienes un recuadro con guías para escribirlo.</li>
+<li><strong>2 · Escribe la lectura</strong> — te dan la palabra en kanji y una línea.</li>
+</ul>
+<p>Una palabra puede traer un kanji que aún no has dado (在庫 aparece por 在 aunque 庫 salga mucho después). En ese caso <strong>la app te regala esa parte de la lectura</strong>, escrita en pequeño encima del kanji, y solo tienes que poner el resto. Si la lectura no se puede repartir entre los kanji —cuando lleva okurigana—, esa palabra no se pregunta, en vez de preguntarla a medias.</p>
+<p><strong>Otro examen</strong> sortea preguntas nuevas de esa lección. <strong>Soluciones</strong> las escribe en su sitio: imprime primero sin soluciones (para hacerlo) y luego con ellas (para corregir).</p>
+<h3>3.8. «Mi libro»: cambiar las lecciones</h3>
+<p><strong>La app no trae ningún temario, y ésa es la idea.</strong> De fábrica reparte los kanji por nivel JLPT y grado escolar japonés, que son listas públicas, solo para que arranque llena. El temario bueno lo pones tú.</p>
+<p>Abre <strong>Mi libro</strong> y escribe una lección por línea, con el formato <code>número | tema | kanji | esperados</code>. El cuarto campo es opcional: es cuántos kanji debería tener esa lección, y la app te avisa si al copiarlos te falta alguno. Las líneas que empiezan por <code>#</code> son comentarios. Tú solo escribes los kanji; las lecturas, los significados y los trazos los pone la app.</p>
+<p>Sirve con cualquier manual, con el temario de tu clase o con el orden que quieras. Y como la app sabe por dónde vas, los ejemplos de vocabulario ponen delante los que solo usan kanji que ya has dado, y los que traen alguno que aún no has visto salen con su significado al lado.</p>
+<p><strong>Comprobar</strong> avisa de líneas mal escritas y de kanji de los que no hay datos.</p>
+<h4>La pestaña «Vocabulario»</h4>
+<p>En el mismo editor, la segunda pestaña es para <strong>tu vocabulario</strong>. Si en tu clase usáis unas palabras concretas, las metes aquí y la app te las pregunta. Una por línea, con el formato <code>palabra | lectura | significado</code>:</p>
+<p><code>新聞 | しん・ぶん | periódico</code></p>
+<ul>
+<li>El <code>・</code> que parte la lectura es <strong>opcional</strong>: solo afina el rōmaji.</li>
+<li>Se admiten dos lecturas válidas con <code>/</code>: <code>日本 | に・ほん / にっ・ぽん | Japón</code>.</li>
+<li>Si repites una palabra que la app ya trae, <strong>manda la tuya</strong>.</li>
+<li><strong>Cargar archivo…</strong> lee un <code>.txt</code> y lo pone en la caja; no guarda nada hasta que le das a <strong>Guardar el libro</strong>, así puedes revisarlo antes.</li>
+</ul>
+<p>Tus palabras salen en las fichas de sus kanji (las primeras), en el buscador, en la hoja de vocabulario, en el examen y en los repasos del juego.</p>
+<aside class="aviso nota">Las palabras <strong>sin ningún kanji</strong> (たべもの, ください) se preguntan en los repasos de palabra ↔ significado, pero no en el examen —que pide la lectura, y la de たべもの es たべもの— ni cuentan para el repaso espaciado, que va por kanji. La app te lo avisa al comprobar.</aside>
+<hr class="salto">
+<h2 id="imprimir-bien">4. Imprimir bien</h2>
+<p>Las dos apps están hechas para que <strong>una hoja de pantalla sea exactamente una hoja A4</strong>. Si te salen dos páginas o los bordes cortados, es cosa del diálogo de impresión del navegador. Comprueba estas cuatro cosas:</p>
+<ol>
+<li class="num"><strong>Tamaño</strong>: A4.</li>
+<li class="num"><strong>Escala</strong>: 100 % — nunca «ajustar al papel».</li>
+<li class="num"><strong>Márgenes</strong>: por defecto.</li>
+<li class="num"><strong>Encabezados y pies del navegador</strong>: desactivados (si no, te mete la URL y la fecha y roba espacio).</li>
+</ol>
+<p>Para guardar en PDF en vez de imprimir, elige «Guardar como PDF» como impresora. El botón <strong>Imprimir / PDF</strong> abre ese mismo diálogo.</p>
+<aside class="aviso info"><strong>El pie de las hojas no se quita.</strong> Es el que dice de dónde salen los trazos y los diccionarios, y las licencias obligan a mantenerlo.</aside>
+<h2 id="atajos-de-teclado">5. Atajos de teclado</h2>
+<div class="tabla"><table>
+<colgroup><col style="width:16.6%"><col style="width:31.0%"><col style="width:52.4%"></colgroup>
+<thead><tr><th>Tecla</th><th>Dónde</th><th>Qué hace</th></tr></thead>
+<tbody>
+<tr><td>← →</td><td>en la hoja</td><td>lección (o fila) anterior y siguiente</td></tr>
+<tr><td>← →</td><td>con una ficha abierta</td><td>kanji o kana anterior y siguiente</td></tr>
+<tr><td>Espacio</td><td>con una ficha abierta</td><td>dibuja un trazo más</td></tr>
+<tr><td>R</td><td>con una ficha abierta</td><td>repite la animación</td></tr>
+<tr><td>/</td><td>app de kanji</td><td>salta al buscador</td></tr>
+<tr><td>↑ ↓ y Enter</td><td>en el buscador</td><td>moverse por los resultados y abrir</td></tr>
+<tr><td>1 a 4</td><td>en el juego</td><td>elegir una de las cuatro opciones</td></tr>
+<tr><td>Enter</td><td>en el juego</td><td>comprobar la respuesta o pasar a la siguiente</td></tr>
+<tr><td>Esc</td><td>en cualquier ventana</td><td>cerrarla</td></tr>
+</tbody>
+</table></div>
+<h2 id="si-algo-va-mal">6. Si algo va mal</h2>
+<div class="tabla"><table>
+<colgroup><col style="width:33.2%"><col style="width:66.8%"></colgroup>
+<thead><tr><th>Qué te pasa</th><th>Qué hacer</th></tr></thead>
+<tbody>
+<tr><td>Los caracteres japoneses salen como cuadraditos</td><td>Estás sin conexión y tu sistema no trae tipografía japonesa. La app te avisa. Con conexión se arregla solo.</td></tr>
+<tr><td>Al imprimir salen dos páginas</td><td>Escala 100 %, márgenes por defecto y sin encabezados del navegador (capítulo «Imprimir bien»).</td></tr>
+<tr><td>Ha desaparecido mi progreso</td><td>Se han borrado los datos del navegador. Restaura con <strong>Cargar</strong> la última copia que bajaste con <strong>Copia</strong>.</td></tr>
+<tr><td>Quiero empezar el juego de cero</td><td>Dentro del juego, <strong>Borrar mi progreso</strong>.</td></tr>
+<tr><td>He liado la tabla o las lecciones</td><td>El botón de restaurar (la flecha circular) las deja como venían de fábrica.</td></tr>
+<tr><td>La letra sale muy pequeña en la hoja de fichas</td><td>Apaga <strong>Ejemplos</strong> o cambia a <strong>2 columnas</strong>: cuanto menos contenido, más grande sale todo lo demás.</td></tr>
+</tbody>
+</table></div>
+<h2 id="creditos-licencias-y-aviso-legal">7. Créditos, licencias y aviso legal</h2>
+<p>Las apps las he hecho yo, pero los datos que llevan dentro son de otros y tienen sus condiciones. <strong>Cada hoja impresa lleva un pie que los cita, y ese pie no se puede quitar</strong>: es exactamente lo que exigen esas licencias.</p>
+<div class="tabla"><table>
+<colgroup><col style="width:34.3%"><col style="width:34.3%"><col style="width:31.3%"></colgroup>
+<thead><tr><th>Qué</th><th>De quién</th><th>Licencia</th></tr></thead>
+<tbody>
+<tr><td>Los trazos (animación y casillas)</td><td>KanjiVG, © Ulrich Apel</td><td>CC BY-SA 3.0</td></tr>
+<tr><td>Lecturas, significados, trazos y nivel</td><td>KANJIDIC2, © EDRDG</td><td>CC BY-SA 4.0</td></tr>
+<tr><td>Vocabulario de ejemplo</td><td>JMdict, © EDRDG</td><td>CC BY-SA 4.0</td></tr>
+<tr><td>El programa, el diseño, las hojas y las traducciones al castellano</td><td>Carlos Mesonero García</td><td>CC BY-SA 4.0</td></tr>
+</tbody>
+</table></div>
+<h3>La licencia del conjunto: CC BY-SA 4.0</h3>
+<p>Puedes <strong>compartirlo</strong> —copiarlo y redistribuirlo por cualquier medio— y <strong>adaptarlo</strong> —remezclarlo, transformarlo y crear a partir de ello—, incluso con fines comerciales. En corto:</p>
+<h4>Qué puedes hacer</h4>
+<ul>
+<li>Usarlo todo lo que quieras para estudiar.</li>
+<li>Imprimir las hojas que necesites para ti.</li>
+<li>Guardar copias de tu progreso.</li>
+<li>Compartirlo con quien quieras, y también modificarlo.</li>
+</ul>
+<h4>Qué se pide a cambio</h4>
+<ul>
+<li><strong>Cita la autoría</strong> e indica si hiciste cambios.</li>
+<li><strong>Comparte igual</strong>: si lo transformas, publica tu versión con esta misma licencia, CC BY-SA 4.0.</li>
+<li><strong>No le quites el pie</strong> con los créditos de KanjiVG, KANJIDIC2 y JMdict: eso lo exigen sus licencias, no yo.</li>
+</ul>
+<p>Texto completo de la licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es" rel="noopener">https://creativecommons.org/licenses/by-sa/4.0/deed.es</a></p>
+<aside class="aviso ojo"><strong>Por qué BY-SA y no «no comercial».</strong> Porque no se puede. Los datos que lleva dentro —KanjiVG, KANJIDIC2, JMdict— son CC BY-SA, y su «Compartir igual» es contagioso: prohíbe añadir restricciones. La cláusula «no comercial» es una restricción añadida, y BY-NC-SA no figura entre las licencias compatibles con BY-SA; mantenerla habría obligado a quitar los trazos, las lecturas y los significados, o sea a quedarse sin app. Tampoco hace falta: ese mismo «Compartir igual» ya impide que nadie coja esto, lo cierre y lo venda como producto propietario — para redistribuirlo tendría que publicarlo igual de abierto.</aside>
+<h3>Aviso legal</h3>
+<p><strong>Sobre los caracteres y las palabras.</strong> Los kanji, sus lecturas y sus significados no son propiedad de nadie, y el vocabulario de ejemplo procede de JMdict, un diccionario libre. Las traducciones al castellano son originales de este proyecto.</p>
+<p><strong>Sobre los manuales.</strong> Esta aplicación <strong>no reproduce el contenido de ningún libro de texto</strong>. No incluye temarios, ni repartos de kanji por lecciones, ni listas de vocabulario tomadas de manual alguno: esa organización es obra de sus autores, y es precisamente lo que aquí pone el usuario. Si cargas tu propio libro en la app, ese material es tuyo y se queda en tu navegador.</p>
+<p><strong>Independencia.</strong> Desarrollo educativo independiente y sin ánimo de lucro. <strong>No está afiliado, patrocinado ni vinculado</strong> con ninguna editorial ni con los autores de ningún manual. Las marcas y títulos que puedan mencionarse pertenecen a sus respectivos titulares y se citan, en su caso, a título meramente informativo.</p>
+<p><strong>Sin garantías.</strong> Esto se entrega «tal cual», sin garantía de ningún tipo. Es material de estudio hecho por un estudiante: puede contener errores, y no sustituye a un profesor ni a un diccionario. Si encuentras un fallo, dilo.</p>
+<aside class="aviso ojo">Esto es una explicación entre compañeros, no asesoramiento legal.</aside>
+
+</article>
+</div>
+<script>
+(function(){
+  /* El tema se comparte con la portada: misma clave y mismo criterio. El
+     localStorage siempre entre try/catch, que en un iframe puede lanzar. */
+  var KEY='jp_portal_theme';
+  function guardado(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function guarda(v){ try{ localStorage.setItem(KEY,v); }catch(e){} }
+  var pref=guardado();
+  var oscuro = pref ? pref==='dark'
+                    : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  var boton=document.getElementById('tema');
+  function aplica(){
+    document.body.classList.toggle('theme-dark',oscuro);
+    boton.textContent = oscuro ? 'Claro' : 'Oscuro';
+  }
+  aplica();
+  boton.addEventListener('click',function(){
+    oscuro=!oscuro; aplica(); guarda(oscuro?'dark':'light');
+  });
+
+  /* Marca en el indice el capitulo que se esta leyendo. */
+  var enlaces={}, titulos=[].slice.call(document.querySelectorAll('article h2'));
+  [].forEach.call(document.querySelectorAll('nav.indice a'),function(a){
+    enlaces[a.getAttribute('href').slice(1)]=a;
+  });
+  if(window.IntersectionObserver && titulos.length){
+    var vistos={};
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(e){ vistos[e.target.id]=e.isIntersecting; });
+      var actual=null;
+      titulos.forEach(function(t){ if(vistos[t.id] && !actual) actual=t.id; });
+      for(var id in enlaces) enlaces[id].classList.toggle('aqui', id===actual);
+    },{rootMargin:'-70px 0px -70% 0px'});
+    titulos.forEach(function(t){ obs.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>
