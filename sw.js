@@ -35,7 +35,7 @@
 
    El manual sí va: es un HTML de un solo archivo, sin dependencias. */
 
-const VERSION = 'fa3e02e2a462';
+const VERSION = 'c049ddc05332';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
