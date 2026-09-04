@@ -38,6 +38,18 @@ body.theme-dark{
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
+/* Movimiento reducido. La misma regla que llevan la portada y las dos apps:
+   quien lo activa en su sistema lo hace por mareos o migranas, y aqui no hay
+   ninguna animacion que valga la pena defender — solo el salto suave del
+   indice y las transiciones de los botones. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    transition-duration:.01ms!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+  }
+}
 body{
   background:var(--bg); color:var(--ink);
   font-family:'Inter','Noto Sans JP','Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;

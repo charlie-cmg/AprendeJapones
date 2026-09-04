@@ -21,10 +21,21 @@
      * Los datos y los iconos van por CACHÉ PRIMERO: son grandes o no cambian,
        y cuando cambian ya vienen con una VERSION nueva.
 
-   No se precarga kanji-datos.js: son 1,4 MB, y quien solo abre el silabario no
-   tiene por qué gastarlos. Se guarda la primera vez que se usa. */
+   NO SE PRECARGA LA APP DE KANJI, y es una decisión, no un olvido. Se sirve en
+   tres piezas: kanji-trazos.html, kanji-app.js y kanji-datos.js (1,4 MB). Los
+   datos no se precargan —quien solo abre el silabario no tiene por qué gastar
+   1,4 MB en ellos—, y una página sin sus datos no es una página: el HTML
+   acertaba en caché, los dos <script> fallaban por no estar, y sin conexión
+   salía una CÁSCARA EN BLANCO. Eso es peor que el mensaje honesto de «Sin
+   conexión» de más abajo, así que la página tampoco va en el armazón.
 
-const VERSION = 'f39babe2ce74';
+   Quien la haya abierto una vez con conexión la sigue teniendo entera: el
+   manejador de `fetch` guarda copia de todo lo que pasa por él. El armazón
+   solo decide qué pasa la PRIMERA vez, y ahí lo único honesto es decirlo.
+
+   El manual sí va: es un HTML de un solo archivo, sin dependencias. */
+
+const VERSION = 'ba1a6ab88e90';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
@@ -32,10 +43,12 @@ const ARMAZON = [
   './',
   './index.html',
   './silabario.html',
-  './kanji-trazos.html',
+  './documentacion/manual-de-usuario.html',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './apple-touch-icon-kanji.png',
+  './icono-192.png',
+  './icono-512.png',
 ];
 
 self.addEventListener('install', e => {
