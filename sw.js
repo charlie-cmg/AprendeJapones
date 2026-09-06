@@ -1,4 +1,4 @@
-/* Service worker de Aprende Japonés.
+/* Service worker de Estudia Japonés.
 
    Existe por dos motivos:
 
@@ -35,7 +35,7 @@
 
    El manual sí va: es un HTML de un solo archivo, sin dependencias. */
 
-const VERSION = '2940bd03bd79';
+const VERSION = '7f18ac76a6e6';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */

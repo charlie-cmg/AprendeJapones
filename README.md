@@ -1,4 +1,4 @@
-# Aprende Japonés
+# Estudia Japonés
 
 Web publicada: **https://estudiajapones.com/**
 
