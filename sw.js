@@ -33,9 +33,10 @@
    manejador de `fetch` guarda copia de todo lo que pasa por él. El armazón
    solo decide qué pasa la PRIMERA vez, y ahí lo único honesto es decirlo.
 
-   El manual sí va: es un HTML de un solo archivo, sin dependencias. */
+   El manual sí va: es un HTML de un solo archivo, sin dependencias. La
+   política de privacidad, igual: un HTML suelto y ligero. */
 
-const VERSION = '4e93d4241adb';
+const VERSION = '315de8e42df0';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
@@ -44,6 +45,7 @@ const ARMAZON = [
   './index.html',
   './silabario.html',
   './documentacion/manual-de-usuario.html',
+  './politica-privacidad.html',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './apple-touch-icon-kanji.png',

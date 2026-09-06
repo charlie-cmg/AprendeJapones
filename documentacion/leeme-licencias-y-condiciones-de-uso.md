@@ -38,6 +38,13 @@ nadie más lo ve. Eso tiene dos consecuencias prácticas:
 > **Cargar** lo restaura. En la app de kanji esa copia incluye también el
 > progreso del juego, que es lo único que no se puede rehacer a mano.
 
+Lo de arriba no cambia. Lo único que sale de tu navegador —y solo en
+`estudiajapones.com`, y solo si tú lo aceptas la primera vez que entras— son
+estadísticas de uso anónimas con Google Analytics, para saber qué mejorar.
+Puedes decir que no, y puedes cambiar de opinión cuando quieras con el botón 🍪
+de la esquina. Todos los detalles, en la política de privacidad:
+`estudiajapones.com/politica-privacidad.html`.
+
 ---
 
 ## Tú pones el temario
