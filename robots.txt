@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://charlie-cmg.github.io/AprendeJapones/sitemap.xml
+Sitemap: https://estudiajapones.com/sitemap.xml

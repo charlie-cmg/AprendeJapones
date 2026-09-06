@@ -1,6 +1,6 @@
 # Aprende Japonés
 
-Web publicada: **https://charlie-cmg.github.io/AprendeJapones/**
+Web publicada: **https://estudiajapones.com/**
 
 Dos aplicaciones gratuitas para estudiar japonés en castellano — hiragana,
 katakana y 1.306 kanji — que se usan en el navegador, sin cuentas y sin
