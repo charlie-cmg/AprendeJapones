@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Esta página no existe · Estudia Japonés</title>
+<!-- Una página de error no se indexa: si el buscador la guardara, saldría en
+     los resultados compitiendo con las páginas de verdad. -->
+<meta name="robots" content="noindex,follow">
+<meta name="description" content="La página que buscas no está en Estudia Japonés. Desde aquí puedes ir al silabario de hiragana y katakana o a la app de kanji.">
+<link rel="icon" href="/icono-192.png">
+<style>
+  :root{
+    --bg:#e9edf4; --card:#fff; --line:#e2e8f0; --ink:#0f172a; --ink-soft:#64748b;
+    --hira:#e11d48; --hira-soft:#fff5f6; --hira-line:#fbcfd6;
+    --kata:#0284c7; --kata-soft:#f2fafe; --kata-line:#b8e3f9;
+    --chrome:#0f172a; --chrome-ink:#f1f5f9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 18px; text-align:center;
+  }
+  .marca{
+    display:flex; align-items:center; gap:9px; margin-bottom:26px;
+    font-weight:800; color:var(--chrome-ink); background:var(--chrome);
+    padding:9px 16px; border-radius:11px; text-decoration:none; font-size:14px;
+  }
+  .marca .jp{color:#f9a8d4; font-size:17px;}
+  h1{font-size:clamp(26px,6vw,40px); line-height:1.15; margin:0 0 10px;}
+  .num{display:block; font-size:13px; font-weight:800; letter-spacing:.16em;
+       text-transform:uppercase; color:var(--ink-soft); margin-bottom:12px;}
+  p{max-width:46ch; margin:0 0 26px; color:var(--ink-soft); line-height:1.6; font-size:15px;}
+  .fila{display:flex; flex-wrap:wrap; gap:12px; justify-content:center;}
+  a.tarjeta{
+    display:flex; align-items:center; gap:11px; text-decoration:none; color:var(--ink);
+    background:var(--card); border:1px solid var(--line); border-radius:13px;
+    padding:14px 18px; min-width:210px; font-weight:700; text-align:left;
+    transition:border-color .12s ease, transform .12s ease;
+  }
+  a.tarjeta:hover{transform:translateY(-2px);}
+  a.tarjeta small{display:block; font-weight:500; font-size:12px; color:var(--ink-soft);}
+  .ficha{
+    width:42px; height:42px; flex:none; border-radius:10px; display:flex;
+    align-items:center; justify-content:center; font-size:23px; font-weight:700;
+  }
+  .h .ficha{background:var(--hira-soft); border:1px solid var(--hira-line); color:var(--hira);}
+  .k .ficha{background:var(--kata-soft); border:1px solid var(--kata-line); color:var(--kata);}
+  .h:hover{border-color:var(--hira-line);} .k:hover{border-color:var(--kata-line);}
+  .otros{margin-top:24px; font-size:13px; color:var(--ink-soft);}
+  .otros a{color:var(--kata); text-decoration:none; font-weight:600;}
+  .otros a:hover{text-decoration:underline;}
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0b1120; --card:#131c2f; --line:#243049; --ink:#e2e8f0; --ink-soft:#94a3b8;
+          --hira-soft:#2a1420; --kata-soft:#0b1a29;}
+  }
+</style>
+</head>
+<body>
+  <a class="marca" href="/"><span class="jp">あ</span> Estudia Japonés</a>
+
+  <span class="num">Error 404</span>
+  <h1>Esta página no existe</h1>
+  <p>Puede que el enlace esté mal escrito o que la página se haya movido.
+  Lo que buscas está casi seguro en una de las dos aplicaciones:</p>
+
+  <div class="fila">
+    <a class="tarjeta h" href="/silabario.html">
+      <span class="ficha">あ</span>
+      <span>Silabario<small>Hiragana y katakana</small></span>
+    </a>
+    <a class="tarjeta k" href="/kanji-trazos.html">
+      <span class="ficha">漢</span>
+      <span>Kanji<small>1.306 kanji con sus trazos</small></span>
+    </a>
+  </div>
+
+  <p class="otros">
+    También puedes volver a la <a href="/">portada</a>
+    o leer el <a href="/documentacion/manual-de-usuario.html">manual de uso</a>.
+  </p>
+</body>
+</html>
