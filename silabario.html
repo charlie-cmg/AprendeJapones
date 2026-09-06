@@ -73,8 +73,8 @@ gtag('consent','default',{'analytics_storage':'denied'});</script>
 </div>
 <button type="button" class="cookie-reabrir" id="cookie-reabrir" onclick="cookiePreferencias()" title="Preferencias de cookies" aria-label="Preferencias de cookies" hidden>🍪</button>
 <script>(function(){var GA_ID='G-FS12QWY7JK';var LS_KEY='ej_cookies';function cargaGA(){if(document.getElementById('ga-script'))return;var s=document.createElement('script');s.id='ga-script';s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(s);gtag('js',new Date());gtag('config',GA_ID);}
-function aplica(valor){if(valor==='aceptado'){gtag('consent','update',{'analytics_storage':'granted'});cargaGA();}else{gtag('consent','update',{'analytics_storage':'denied'});}}
-function guarda(valor){try{localStorage.setItem(LS_KEY,valor);}catch(e){}
+var aceptado=false;function aplica(valor){aceptado=(valor==='aceptado');if(aceptado){gtag('consent','update',{'analytics_storage':'granted'});cargaGA();}else{gtag('consent','update',{'analytics_storage':'denied'});}}
+window.mide=function(nombre,datos){if(aceptado)gtag('event',nombre,datos||{});};function guarda(valor){try{localStorage.setItem(LS_KEY,valor);}catch(e){}
 aplica(valor);document.getElementById('cookie-aviso').hidden=true;document.getElementById('cookie-reabrir').hidden=false;}
 function abre(){document.getElementById('cookie-aviso').hidden=false;var btn=document.querySelector('#cookie-aviso .cookie-btn-rechazar');if(btn)btn.focus();}
 window.cookieAcepta=function(){guarda('aceptado');};window.cookieRechaza=function(){guarda('rechazado');};window.cookiePreferencias=abre;var guardado=null;try{guardado=localStorage.getItem(LS_KEY);}catch(e){}
@@ -510,7 +510,7 @@ let paperDark=LS.get('jp_kana_paper')==='dark';function togglePaper(){paperDark=
 function applyPaper(){document.body.classList.toggle('print-dark',paperDark);const v=document.getElementById('v-paper');v.textContent=paperDark?'oscuro':'claro';v.className='val '+(paperDark?'no':'yes');}
 function toggleOrientation(){isLand=!isLand;applyOrientation();LS.set('jp_kana_orient',isLand?'landscape':'portrait');}
 function applyOrientation(){document.body.classList.toggle('landscape',isLand);document.getElementById('page-rule').textContent=`@page{size:A4 ${isLand ? 'landscape' : 'portrait'};margin:8mm;}`;const v=document.getElementById('v-orient');if(v)v.textContent=isLand?'Horizontal':'Vertical';fitAll();}
-function printSheet(){toast('En el diálogo: márgenes «Predeterminado» y activa «Gráficos de fondo»');setTimeout(()=>window.print(),450);}
+function printSheet(){mide('imprimir',{vista:calliOn?'caligrafia':'tabla'});toast('En el diálogo: márgenes «Predeterminado» y activa «Gráficos de fondo»');setTimeout(()=>window.print(),450);}
 function setByPath(path,value){const keys=path.split('.');let ref=appData;for(let i=0;i<keys.length-1;i++)ref=ref[keys[i]];ref[keys[keys.length-1]]=value;}
 document.addEventListener('blur',e=>{const el=e.target;if(!el.dataset||!el.dataset.path)return;setByPath(el.dataset.path,el.innerText.trim());save(false);fitAll();},true);function save(withToast){const ok=LS.set(STORE,JSON.stringify(appData));if(withToast)toast(ok?'Guardado en este navegador':'Cambios aplicados, pero este entorno no permite guardarlos al recargar');}
 function saveNow(){save(true);}
@@ -596,7 +596,7 @@ function backToSetup(){show('game-setup');const best=LS.get('jp_kana_best');docu
 function show(which){['game-setup','game-play','game-end'].forEach(id=>{document.getElementById(id).hidden=(id!==which);});}
 function startGame(){const gmode=document.querySelector('#chips-mode .chip.on').dataset.mode;const sets=new Set([...document.querySelectorAll('#chips-sets .chip.on')].map(c=>c.dataset.set));const scriptC=document.querySelector('#chips-script .chip.on').dataset.script;const scripts=new Set(scriptC==='both'?['h','k']:[scriptC]);const len=parseInt(document.querySelector('#chips-len .chip.on').dataset.len,10);G.mode=gmode;let deck=gmode==='words'?deckWords(scripts):deckFrom(sets,scripts);if(!deck.length){toast(gmode==='words'?'No hay palabras de ese silabario':'Esa combinación no tiene caracteres: las especiales solo existen en katakana');return;}
 G.pool=deck.slice();const adaptive=document.querySelector('#chips-order .chip.on').dataset.order==='weak';deck=adaptive?weightedOrder(deck):shuffle(deck);if(len>0)deck=deck.slice(0,len);if(adaptive)shuffle(deck);launch(deck);}
-function launch(deck){G.deck=deck;G.i=0;G.hits=0;G.streak=0;G.best=0;G.misses=[];G.answered=false;G.tries=0;G.t0=Date.now();show('game-play');askQuestion();}
+function launch(deck){mide('juego_partida',{modo:G.mode,preguntas:deck.length});G.deck=deck;G.i=0;G.hits=0;G.streak=0;G.best=0;G.misses=[];G.answered=false;G.tries=0;G.t0=Date.now();show('game-play');askQuestion();}
 function askQuestion(){const q=G.deck[G.i];const input=document.getElementById('game-input');const kanaEl=document.getElementById('game-kana');const choices=document.getElementById('game-choices');const isChoice=G.mode==='choice';G.answered=false;G.tries=0;document.getElementById('btn-skip').hidden=false;document.getElementById('btn-next').hidden=true;document.getElementById('game-progress').textContent=(G.i+1)+' / '+G.deck.length;document.getElementById('game-score').textContent=G.hits+(G.hits===1?' acierto':' aciertos')+' · racha '+G.streak;document.getElementById('game-bar-fill').style.width=(G.i/G.deck.length*100)+'%';document.getElementById('game-feedback').innerHTML='';document.getElementById('game-meaning').textContent='';const isDibujo=G.mode==='dibujo';kanaEl.className='game-kana '+(isChoice||isDibujo?'rom':(q.word?'jp word':'jp'));kanaEl.textContent=isChoice||isDibujo?q.r:q.char;choices.hidden=!isChoice;input.hidden=isChoice||isDibujo;document.getElementById('tz-juego').hidden=!isDibujo;const insignia=document.getElementById('game-silabario');insignia.hidden=!isDibujo;if(isDibujo){const kata=esKatakana(q.char);insignia.textContent=kata?'Katakana':'Hiragana';insignia.className='game-silabario '+(kata?'k':'h');}
 if(isDibujo){document.getElementById('game-meaning').textContent='Dibújalo, trazo a trazo y en orden';tzJuegoCarga(q.char);return;}
 if(isChoice){choices.innerHTML=optionsFor(q).map((opt,i)=>`<button class="choice jp" data-kana="${esc(opt.char)}" onclick="pickOption(this)">
@@ -654,7 +654,7 @@ const script=document.querySelector('#chips-cscript .chip.on').dataset.cscript;c
         }).join('')}
       </div>
       ${footerHTML}
-    </div></div>`).join('');layoutCalliPages();closeCalli();setCalli(true);if(document.body.classList.contains('escribiendo'))tzcRearma();toast(pages.length>1?'Hoja lista: '+pages.length+' páginas, imprímelas todas juntas':'Hoja lista: imprímela o cambia las filas cuando quieras');}
+    </div></div>`).join('');layoutCalliPages();closeCalli();setCalli(true);if(document.body.classList.contains('escribiendo'))tzcRearma();toast(pages.length>1?'Hoja lista: '+pages.length+' páginas, imprímelas todas juntas':'Hoja lista: imprímela o cambia las filas cuando quieras');mide('hoja_caligrafia',{caracteres:chars.length,silabario:scriptLabel,paginas:pages.length});}
 chipGroup('chips-cscript',true);chipGroup('chips-crows',false);document.getElementById('chips-cprog').addEventListener('click',e=>{const chip=e.target.closest('.chip');if(!chip)return;chip.classList.toggle('on');});let fitTimer;function scheduleFit(){clearTimeout(fitTimer);fitTimer=setTimeout(fitAll,120);}
 window.addEventListener('resize',scheduleFit);const stageEl=document.getElementById('stage');let lastStageW=0;if('ResizeObserver'in window&&stageEl){new ResizeObserver(()=>{const w=stageEl.clientWidth;if(w===lastStageW)return;lastStageW=w;scheduleFit();}).observe(stageEl);}
 applyTheme();applyRomaji();applyNotes();applyHeat();applyPaper();applyOrientation();renderAll();paintIcons();applyAudio();const DLG_IDS=['kana-dlg','game','calli-dlg'];const FOCABLES='a[href],button:not([disabled]),input:not([disabled]),'+'select:not([disabled]),textarea:not([disabled]),'+'[tabindex]:not([tabindex="-1"])';let focoPrevio=null;function dlgAbierto(){return DLG_IDS.map(id=>document.getElementById(id)).find(d=>d&&!d.hidden)||null;}
@@ -730,7 +730,7 @@ window.addEventListener('resize',sincronizaFluida);sincronizaFluida();let tzcHoj
 return tzcHoja;}
 function tzcModo(encendido){sincronizaFluida();const b=document.getElementById('btn-escribir');if(b){b.classList.toggle('btn-go',encendido);const v=document.getElementById('v-escribir');if(v)v.textContent=encendido?'Dejar de escribir':'Escribir';}}
 function tzcAlterna(){const h=tzcListo();if(!h)return;if(!document.querySelector('#calli-pages .calli-box[data-tz]')){toast('Genera antes una hoja de caligrafía');return;}
-h.alterna();}
+h.alterna();if(h.activo())mide('escribir_dedo');}
 function tzcOtra(){if(tzcHoja)tzcHoja.otra();}
 function tzcSalta(){if(tzcHoja)tzcHoja.salta();}
 function tzcApaga(){if(tzcHoja)tzcHoja.apaga();}

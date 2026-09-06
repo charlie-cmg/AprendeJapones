@@ -75,8 +75,8 @@ gtag('consent','default',{'analytics_storage':'denied'});</script>
 </div>
 <button type="button" class="cookie-reabrir" id="cookie-reabrir" onclick="cookiePreferencias()" title="Preferencias de cookies" aria-label="Preferencias de cookies" hidden>🍪</button>
 <script>(function(){var GA_ID='G-FS12QWY7JK';var LS_KEY='ej_cookies';function cargaGA(){if(document.getElementById('ga-script'))return;var s=document.createElement('script');s.id='ga-script';s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;document.head.appendChild(s);gtag('js',new Date());gtag('config',GA_ID);}
-function aplica(valor){if(valor==='aceptado'){gtag('consent','update',{'analytics_storage':'granted'});cargaGA();}else{gtag('consent','update',{'analytics_storage':'denied'});}}
-function guarda(valor){try{localStorage.setItem(LS_KEY,valor);}catch(e){}
+var aceptado=false;function aplica(valor){aceptado=(valor==='aceptado');if(aceptado){gtag('consent','update',{'analytics_storage':'granted'});cargaGA();}else{gtag('consent','update',{'analytics_storage':'denied'});}}
+window.mide=function(nombre,datos){if(aceptado)gtag('event',nombre,datos||{});};function guarda(valor){try{localStorage.setItem(LS_KEY,valor);}catch(e){}
 aplica(valor);document.getElementById('cookie-aviso').hidden=true;document.getElementById('cookie-reabrir').hidden=false;}
 function abre(){document.getElementById('cookie-aviso').hidden=false;var btn=document.querySelector('#cookie-aviso .cookie-btn-rechazar');if(btn)btn.focus();}
 window.cookieAcepta=function(){guarda('aceptado');};window.cookieRechaza=function(){guarda('rechazado');};window.cookiePreferencias=abre;var guardado=null;try{guardado=localStorage.getItem(LS_KEY);}catch(e){}
