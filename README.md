@@ -4,7 +4,9 @@ Web publicada: **https://estudiajapones.com/**
 
 Dos aplicaciones gratuitas para estudiar japonés en castellano — hiragana,
 katakana y 1.306 kanji — que se usan en el navegador, sin cuentas y sin
-seguimiento de ningún tipo.
+instalar nada. Tu progreso no sale de tu navegador; la única medición es
+Google Analytics, y solo si lo aceptas ([política de
+privacidad](https://estudiajapones.com/politica-privacidad.html)).
 
 Este repositorio contiene **únicamente la web publicada**. Se genera desde un
 repositorio de desarrollo aparte, así que aquí no hay ni fuentes ni
