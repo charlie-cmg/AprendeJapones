@@ -36,7 +36,7 @@
    El manual sí va: es un HTML de un solo archivo, sin dependencias. La
    política de privacidad, igual: un HTML suelto y ligero. */
 
-const VERSION = 'aaf3c8acd301';
+const VERSION = '5174881e57ad';
 const CACHE = 'aprende-japones-' + VERSION;
 
 /* El armazón: lo mínimo para que las tres páginas abran sin red. */
