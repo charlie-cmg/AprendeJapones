@@ -166,3 +166,4 @@ sustituye a un profesor ni a un diccionario. Si encuentras un fallo, dilo.
 | Quiero empezar el juego de cero | Dentro del juego, **Borrar mi progreso**. |
 | He liado la tabla o las lecciones | El botón de restaurar (la flecha circular) las deja como venían de fábrica. |
 | La letra sale muy pequeña en la hoja de fichas | Apaga **Ejemplos** o cambia a **2 columnas**: cuanto menos contenido, más grande sale todo lo demás. |
+| Nada de esto arregla lo tuyo | Escríbeme a hola@estudiajapones.com o abre un tema en GitHub Issues. |
