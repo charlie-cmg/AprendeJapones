@@ -1,0 +1,15 @@
+{
+  "name": "Kanji · trazos, tus lecciones y hoja imprimible",
+  "short_name": "Kanji",
+  "description": "1.306 kanji con lecturas, significados y trazos: fichas, caligrafía y exámenes imprimibles, repaso espaciado y juego.",
+  "lang": "es",
+  "start_url": "./kanji-trazos.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
