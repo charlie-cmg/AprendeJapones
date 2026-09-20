@@ -163,10 +163,14 @@ function findWords(s){return String(s==null?'':s).toLowerCase().normalize('NFD')
 let FIND=null;function findReset(){FIND=null;const res=document.getElementById('find-res');if(res&&!res.hidden)findRun();}
 function findBuild(){if(typeof VOC==='undefined'&&window.VOCAB_JS&&!vocabIntentado){pideVocabulario().then(()=>findBuild());return;}
 FIND=[];const vistos=new Set();book.lessons.forEach((les,i)=>{lessonKanji(les).forEach(ch=>{if(vistos.has(ch))return;vistos.add(ch);const d=kanjiInfo(ch);if(!d)return;const kana=(prettyOn(d[1])+' '+prettyKun(d[2])).trim();FIND.push({w:0,ch,les:i,n:les.n,txt:ch,es:d[3],kana,nkana:findSep(kana,findNorm),rom:findSep(romajiOn(d[1])+'·'+romajiKun(d[2]),findRom),pal:findWords(d[3])});vocabOf(ch,true).forEach(v=>{FIND.push({w:1,ch,les:i,n:les.n,txt:v[0],es:v[2],kana:v[1],nkana:findNorm(v[1]),rom:findRom(wordToRomaji(v[1])),pal:findWords(v[2])});});});});}
-const FIND_MAX=40;function findScore(e,q,qr){let mejor=-1;const mira=(campo,consulta)=>{if(!campo||!consulta)return;const p=campo.indexOf(consulta);if(p<0)return;const s=campo===consulta?0:p===0?1:2;if(mejor<0||s<mejor)mejor=s;};mira(e.txt,q);mira(e.nkana,q);mira(e.rom,qr);for(const p of e.pal){if(p===q){if(mejor<0||mejor>3)mejor=3;break;}
+const FIND_MAX=40;const NUM_ES={'0':'cero','1':'uno','2':'dos','3':'tres','4':'cuatro','5':'cinco','6':'seis','7':'siete','8':'ocho','9':'nueve','10':'diez','100':'cien','1000':'mil','10000':'diez mil','100000000':'cien millones','1000000000':'mil millones','10000000000':'diez mil millones','1000000000000':'billón'};function contieneFrase(pal,frase){for(let i=0;i+frase.length<=pal.length;i++){let ok=true;for(let j=0;j<frase.length;j++)if(pal[i+j]!==frase[j]){ok=false;break;}
+if(ok)return true;}
+return false;}
+function findScore(e,q,qr,qNum){let mejor=-1;const mira=(campo,consulta)=>{if(!campo||!consulta)return;const p=campo.indexOf(consulta);if(p<0)return;const s=campo===consulta?0:p===0?1:2;if(mejor<0||s<mejor)mejor=s;};mira(e.txt,q);mira(e.nkana,q);mira(e.rom,qr);for(const p of e.pal){if(p===q){if(mejor<0||mejor>3)mejor=3;break;}
 if(p.indexOf(q)===0&&(mejor<0||mejor>4))mejor=4;}
+if(qNum&&qNum.length&&contieneFrase(e.pal,qNum)){if(mejor<0||mejor>4)mejor=4;}
 return mejor;}
-function findSearch(raw){const q=findNorm(raw);const qr=findRom(raw);if(q.length<1)return[];if(!FIND)findBuild();const out=[];for(const e of FIND){const s=findScore(e,q,qr);if(s>=0)out.push({e,s});}
+function findSearch(raw){const q=findNorm(raw);const qr=findRom(raw);if(q.length<1)return[];if(!FIND)findBuild();const qNum=/^\d+$/.test(q)&&NUM_ES[q]?findWords(NUM_ES[q]):null;const out=[];for(const e of FIND){const s=findScore(e,q,qr,qNum);if(s>=0)out.push({e,s});}
 out.sort((a,b)=>a.s-b.s||a.e.w-b.e.w||a.e.les-b.e.les||a.e.txt.length-b.e.txt.length);const vistas=new Set(),res=[];for(const o of out){const k=o.e.w+'|'+o.e.txt+'|'+o.e.n;if(vistas.has(k))continue;vistas.add(k);res.push(o.e);if(res.length>=FIND_MAX)break;}
 return res;}
 let findHits=[],findSel=-1;function findRun(){const q=document.getElementById('find-q').value.trim();const res=document.getElementById('find-res');document.getElementById('find-x').hidden=!q;if(!q){findHits=[];findSel=-1;res.hidden=true;res.innerHTML='';return;}
