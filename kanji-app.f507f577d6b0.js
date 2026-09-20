@@ -44,8 +44,8 @@ function cargaCorrecciones(){try{return limpiaCorrecciones(JSON.parse(LS.get(COR
 catch(e){return[];}}
 let corrs=cargaCorrecciones();let corrSeq=0;const _corrMemo={clave:-1,porTermino:null,porKanji:null};function correcciones(){const clave=corrSeq;if(_corrMemo.clave===clave)return _corrMemo;const porTermino=new Map(),porKanji={};corrs.forEach(v=>{porTermino.set(v[0],v);new Set(Array.from(v[0]).filter(c=>ES_KANJI.test(c)&&KD[c])).forEach(c=>{(porKanji[c]=porKanji[c]||[]).push(v);});});_corrMemo.clave=clave;_corrMemo.porTermino=porTermino;_corrMemo.porKanji=porKanji;return _corrMemo;}
 const conCorreccion=v=>correcciones().porTermino.get(v[0])||v;function guardaCorrecciones(){corrSeq++;LS.set(CORR_STORE,JSON.stringify(corrs));findReset();if(typeof renderSheet==='function')renderSheet();}
-let corrAbierta=null;function abreCorreccion(palabra,lectura,es){if(!palabra)return;corrAbierta=palabra;corrOriginal=(lectura||es)?((lectura||'')+' · '+(es||'')):'';const ya=correcciones().porTermino.get(palabra);document.getElementById('corr-palabra').value=palabra;document.getElementById('corr-lectura').value=ya?ya[1]:(lectura||'');document.getElementById('corr-es').value=ya?ya[2]:(es||'');document.getElementById('corr-quitar').hidden=!ya;document.getElementById('corr-report').textContent='';document.getElementById('corr-lead').textContent=ya?'Ya tenías una corrección para esta palabra. Manda sobre tu vocabulario y sobre el de la app.':'Lo que guardes aquí manda sobre tu vocabulario y sobre el de la app, en la ficha, la hoja, el buscador y el juego.';ponEnlaceCorreccion();document.getElementById('corr-dlg').hidden=false;document.getElementById('corr-lectura').focus();}
-function cierraCorreccion(){document.getElementById('corr-dlg').hidden=true;corrAbierta=null;}
+let corrAbierta=null;function abreCorreccion(palabra,lectura,es){if(!palabra)return;corrAbierta=palabra;corrOriginal=(lectura||es)?((lectura||'')+' · '+(es||'')):'';const ya=correcciones().porTermino.get(palabra);document.getElementById('corr-palabra').value=palabra;document.getElementById('corr-lectura').value=ya?ya[1]:(lectura||'');document.getElementById('corr-es').value=ya?ya[2]:(es||'');document.getElementById('corr-quitar').hidden=!ya;document.getElementById('corr-report').textContent='';document.getElementById('corr-lead').textContent=ya?'Ya tenías una corrección para esta palabra. Manda sobre tu vocabulario y sobre el de la app.':'Lo que guardes aquí manda sobre tu vocabulario y sobre el de la app, en la ficha, la hoja, el buscador y el juego.';ponEnlaceCorreccion();document.getElementById('corr-dlg').hidden=false;marcaDialogos();document.getElementById('corr-lectura').focus();}
+function cierraCorreccion(){document.getElementById('corr-dlg').hidden=true;marcaDialogos();corrAbierta=null;}
 document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('.fix-btn');if(b)abreCorreccion(b.dataset.w,b.dataset.r,b.dataset.e);});function guardaCorreccion(){if(!corrAbierta)return;const lectura=document.getElementById('corr-lectura').value.trim();const es=document.getElementById('corr-es').value.trim();if(!lectura||!es){document.getElementById('corr-report').textContent='Hacen falta la lectura y el significado: una corrección a medias deja la palabra peor que estaba.';return;}
 const i=corrs.findIndex(v=>v[0]===corrAbierta);const nueva=[corrAbierta,lectura,es];if(i>=0)corrs[i]=nueva;else corrs.push(nueva);guardaCorrecciones();mide('correccion_guardada',{palabra_nueva:i<0});const ch=kdChar;cierraCorreccion();if(ch&&!document.getElementById('kanji-dlg').hidden)openKanji(ch);toast('Corregido: '+nueva[0]);}
 function quitaCorreccion(){if(!corrAbierta)return;const antes=corrs.length;corrs=corrs.filter(v=>v[0]!==corrAbierta);if(corrs.length===antes)return;guardaCorrecciones();const ch=kdChar;const palabra=corrAbierta;cierraCorreccion();if(ch&&!document.getElementById('kanji-dlg').hidden)openKanji(ch);toast('Quitada la corrección de '+palabra+'; vuelve lo de antes');}
@@ -129,6 +129,7 @@ function toggleGuides(){guides=!guides;LS.set('kj_guides',guides?'on':'off');app
 function applyGuides(){document.body.classList.toggle('no-guides',!guides);const v=document.getElementById('v-guides');v.textContent=guides?'sí':'no';v.className='val '+(guides?'yes':'no');}
 function printSheet(){mide('imprimir',{vista:calliOn?'caligrafia':view});fitAll();setTimeout(()=>window.print(),60);}
 let toastTimer;function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
+const DIALOGOS=['kanji-dlg','book-dlg','calli-dlg','corr-dlg','game'];function marcaDialogos(){const hay=DIALOGOS.some(id=>!document.getElementById(id).hidden);document.documentElement.classList.toggle('dlg-abierto',hay);document.body.classList.toggle('dlg-abierto',hay);}
 let kdChar=null;let kdList=[],kdIdx=-1;let kdShown=0;let kdTimer=null;let kdAnim=null;let kdSpeed=1;function kdPaths(){const svg=document.querySelector('#kd-stage .kvg .g-ink');return svg?Array.from(svg.querySelectorAll('path')):[];}
 function kdStop(){clearTimeout(kdTimer);kdTimer=null;if(kdAnim){try{kdAnim.cancel();}catch(e){}kdAnim=null;}}
 function menosMovimiento(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
@@ -154,8 +155,8 @@ document.getElementById('kd-tags').innerHTML='<span class="kd-tag acc">'+n+' tra
 (gradeLabel(grade)?'<span class="kd-tag">'+gradeLabel(grade)+'</span>':'');let voc=vocabOf(ch);if(resaltar&&!voc.some(v=>v[0]===resaltar)){const extra=vocabOf(ch,true).find(v=>v[0]===resaltar);if(extra)voc=voc.slice(0,VOC_MOSTRADOS-1).concat([extra]);}
 const lapiz=v=>' <button type="button" class="fix-btn" title="Corregir esta palabra"'+' aria-label="Corregir '+esc(v[0])+'"'+' data-w="'+esc(v[0])+'" data-r="'+esc(v[1])+'" data-e="'+esc(v[2])+'">&#9998;</button>';document.getElementById('kd-voc').innerHTML=voc.length?voc.map(v=>'<tr'+(resaltar&&v[0]===resaltar?' class="hit"':'')+'><td class="w">'+esc(v[0])+'</td>'+'<td class="r">'+esc(v[1])+'</td>'+'<td class="rom">'+esc(wordToRomaji(v[1]))+'</td>'+'<td class="en">'+esc(v[2])+ayudaHTML(v[0])+lapiz(v)+'</td></tr>').join(''):'<tr><td class="none">El libro no da palabras de ejemplo para este kanji.</td></tr>';const total=strokesOf(ch).length;let strip='';for(let i=1;i<=total;i++){strip+='<div class="kd-step"><i>'+i+'</i>'+
 strokeSVG(ch,{upto:i,ghost:true,guide:false})+'</div>';}
-document.getElementById('kd-strip').innerHTML=strip;document.getElementById('kanji-dlg').hidden=false;pintaEnlace();muestraTrazos();tzCarga(ch);}
-function closeKanji(){kdStop();document.getElementById('kanji-dlg').hidden=true;kdChar=null;pintaEnlace();}
+document.getElementById('kd-strip').innerHTML=strip;document.getElementById('kanji-dlg').hidden=false;marcaDialogos();pintaEnlace();muestraTrazos();tzCarga(ch);}
+function closeKanji(){kdStop();document.getElementById('kanji-dlg').hidden=true;marcaDialogos();kdChar=null;pintaEnlace();}
 function findNorm(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[・·\s.\-'()、,]/g,'');}
 function findRom(s){return findNorm(s).replace(/sy/g,'sh').replace(/ty/g,'ch').replace(/zy/g,'j').replace(/(^|[^sctz])hu/g,'$1fu').replace(/tu/g,'tsu').replace(/ou|oo/g,'o').replace(/uu/g,'u');}
 function findSep(s,fn){return String(s).split(/[・·\s]+/).map(fn).filter(Boolean).join('|');}
@@ -171,17 +172,20 @@ if(p.indexOf(q)===0&&(mejor<0||mejor>4))mejor=4;}
 if(qNum&&qNum.length&&contieneFrase(e.pal,qNum)){if(mejor<0||mejor>4)mejor=4;}
 return mejor;}
 function findSearch(raw){const q=findNorm(raw);const qr=findRom(raw);if(q.length<1)return[];if(!FIND)findBuild();const qNum=/^\d+$/.test(q)&&NUM_ES[q]?findWords(NUM_ES[q]):null;const out=[];for(const e of FIND){const s=findScore(e,q,qr,qNum);if(s>=0)out.push({e,s});}
-out.sort((a,b)=>a.s-b.s||a.e.w-b.e.w||a.e.les-b.e.les||a.e.txt.length-b.e.txt.length);const vistas=new Set(),res=[];for(const o of out){const k=o.e.w+'|'+o.e.txt+'|'+o.e.n;if(vistas.has(k))continue;vistas.add(k);res.push(o.e);if(res.length>=FIND_MAX)break;}
-return res;}
+out.sort((a,b)=>a.s-b.s||a.e.w-b.e.w||a.e.les-b.e.les||a.e.txt.length-b.e.txt.length);const vistas=new Map(),res=[];for(const o of out){const k=o.e.w+'|'+o.e.txt;const ya=vistas.get(k);if(ya){if(!ya.dest.some(t=>t.les===o.e.les)){ya.dest.push({les:o.e.les,n:o.e.n,ch:o.e.ch});}
+continue;}
+if(res.length>=FIND_MAX)continue;const fila=Object.assign({},o.e,{dest:[{les:o.e.les,n:o.e.n,ch:o.e.ch}]});vistas.set(k,fila);res.push(fila);}
+for(const e of res)e.dest.sort((a,b)=>a.les-b.les);return res;}
 let findHits=[],findSel=-1;function findRun(){const q=document.getElementById('find-q').value.trim();const res=document.getElementById('find-res');document.getElementById('find-x').hidden=!q;if(!q){findHits=[];findSel=-1;res.hidden=true;res.innerHTML='';return;}
 findHits=findSearch(q);findSel=findHits.length?0:-1;if(!findHits.length){res.innerHTML='<div class="find-none">Nada para <b>'+esc(q)+'</b>. '+'Se puede buscar por kanji, kana, rōmaji o significado.</div>';res.hidden=false;return;}
 let html='',cat=null;findHits.forEach((e,i)=>{const c=e.w?'Palabras':'Kanji';if(c!==cat){cat=c;html+='<div class="find-cat">'+c+'</div>';}
 html+='<button class="fr'+(i===findSel?' on':'')+'" role="option" '+'onclick="findGo('+i+')" onmousemove="findMark('+i+')">'+'<span class="jp">'+esc(e.w?e.txt:e.ch)+'</span>'+'<span class="top">'+
-(e.w?'<b>'+esc(e.kana)+'</b>':'<i>'+esc(e.kana)+'</i>')+'<span class="rom">'+esc(e.w?wordToRomaji(e.kana):findRomKanji(e.ch))+'</span>'+'</span>'+'<span class="les">L'+e.n+'</span>'+'<span class="es">'+esc(e.es)+'</span>'+'</button>';});res.innerHTML=html;res.hidden=false;res.scrollTop=0;}
+(e.w?'<b>'+esc(e.kana)+'</b>':'<i>'+esc(e.kana)+'</i>')+'<span class="rom">'+esc(e.w?wordToRomaji(e.kana):findRomKanji(e.ch))+'</span>'+'</span>'+'<span class="les-grupo">'+
+e.dest.map((t,d)=>'<span class="les" title="Ir a la lección '+esc(t.n)+'"'+' onclick="findGo('+i+','+d+');event.stopPropagation();">'+'L'+esc(t.n)+'</span>').join('')+'</span>'+'<span class="es">'+esc(e.es)+'</span>'+'</button>';});res.innerHTML=html;res.hidden=false;res.scrollTop=0;}
 function findRomKanji(ch){const d=kanjiInfo(ch);if(!d)return'';const on=d[1]?kanaToRomaji(d[1].split('·')[0],true):'';const kun=d[2]?romajiKun(d[2].split('·')[0]):'';return[on,kun].filter(Boolean).join(' · ');}
 function findMark(i){if(i===findSel)return;findSel=i;document.querySelectorAll('#find-res .fr').forEach((b,j)=>b.classList.toggle('on',j===i));}
 function findMove(d){if(!findHits.length)return;findSel=(findSel+d+findHits.length)%findHits.length;const filas=document.querySelectorAll('#find-res .fr');filas.forEach((b,j)=>b.classList.toggle('on',j===findSel));const f=filas[findSel];if(f)f.scrollIntoView({block:'nearest'});}
-function findGo(i){const e=findHits[i];if(!e)return;findHide();document.getElementById('find-q').blur();if(e.les!==lesson)setLesson(e.les);openKanji(e.ch,e.w?e.txt:null);}
+function findGo(i,d){const e=findHits[i];if(!e)return;const t=e.dest[d||0];findHide();document.getElementById('find-q').blur();if(t.les!==lesson)setLesson(t.les);openKanji(t.ch,e.w?e.txt:null);}
 function findHide(){document.getElementById('find-res').hidden=true;}
 function findClear(){const q=document.getElementById('find-q');q.value='';findRun();q.focus();}
 (()=>{const q=document.getElementById('find-q');q.addEventListener('input',findRun);q.addEventListener('focus',()=>{if(q.value.trim())findRun();});q.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();findMove(1);}
@@ -212,8 +216,8 @@ function calliButton(){if(calliOn){setCalli(false);return;}
 openCalli();}
 function setCalli(on){if(!on&&typeof tzcApaga==='function')tzcApaga();calliOn=on;pintaGruposMovil();document.body.classList.toggle('calli',on);document.getElementById('v-calli').textContent=on?'Ver la lección':'Caligrafía';document.getElementById('btn-calli').classList.toggle('btn-go',on);fitAll();}
 function openCalli(){const box=document.getElementById('chips-clesson');box.innerHTML=book.lessons.map((l,i)=>'<button class="chip'+(i===lesson?' on':'')+'" data-cl="'+i+'">'+
-esc(l.n)+(l.name?' · '+esc(l.name):'')+'</button>').join('');document.getElementById('calli-dlg').hidden=false;calliReport();}
-function closeCalli(){document.getElementById('calli-dlg').hidden=true;}
+esc(l.n)+(l.name?' · '+esc(l.name):'')+'</button>').join('');document.getElementById('calli-dlg').hidden=false;marcaDialogos();calliReport();}
+function closeCalli(){document.getElementById('calli-dlg').hidden=true;marcaDialogos();}
 function pickLessons(which){document.querySelectorAll('#chips-clesson .chip').forEach((c,i)=>{c.classList.toggle('on',which==='all'||(which==='cur'&&i===lesson));});calliReport();}
 function calliPedidos(){const out=[];document.querySelectorAll('#chips-clesson .chip.on').forEach(c=>{const les=book.lessons[+c.dataset.cl];if(les)lessonKanji(les).forEach(ch=>out.push(ch));});return out;}
 function calliChars(){return calliPedidos().filter(hayTrazos);}
@@ -302,8 +306,8 @@ const G={deck:[],i:0,hits:0,streak:0,best:0,misses:[],answered:false,tries:0,t0:
 gameReport();});}
 function openGame(){if(typeof VOC==='undefined'&&window.VOCAB_JS&&!vocabIntentado){pideVocabulario().then(()=>openGame());return;}
 const box=document.getElementById('chips-glesson');box.innerHTML=book.lessons.map((l,i)=>'<button class="chip'+(i===lesson?' on':'')+'" data-gl="'+i+'">'+
-esc(l.n)+(l.name?' · '+esc(l.name):'')+'</button>').join('');document.getElementById('game').hidden=false;show('game-setup');soloDue=false;aplicaDue();syncStats();gameReport();}
-function closeGame(){document.getElementById('game').hidden=true;if(window.speechSynthesis)speechSynthesis.cancel();applyHeat();renderSrs();}
+esc(l.n)+(l.name?' · '+esc(l.name):'')+'</button>').join('');document.getElementById('game').hidden=false;marcaDialogos();show('game-setup');soloDue=false;aplicaDue();syncStats();gameReport();}
+function closeGame(){document.getElementById('game').hidden=true;marcaDialogos();if(window.speechSynthesis)speechSynthesis.cancel();applyHeat();renderSrs();}
 function backToSetup(){show('game-setup');syncStats();gameReport();}
 function show(which){['game-setup','game-play','game-end'].forEach(id=>{document.getElementById(id).hidden=(id!==which);});}
 let soloDue=false;function toggleDue(){soloDue=!soloDue;aplicaDue();gameReport();}
@@ -369,8 +373,8 @@ function parseVocabText(txt){const palabras=[];const bad=[];const sinKanji=[];co
 const palabra=parts[0];if(vistas.has(palabra)){repes++;return;}
 vistas.add(palabra);const es=parts.slice(2).join(' | ');palabras.push([palabra,parts[1],es]);if(!Array.from(palabra).some(c=>ES_KANJI.test(c)&&kanjiInfo(c))){sinKanji.push(palabra);}});return{palabras,bad,sinKanji,repes};}
 function vocabToText(v){return(Array.isArray(v)?v:[]).map(x=>x[0]+' | '+x[1]+' | '+x[2]).join('\n');}
-function openBook(){document.getElementById('book-title').value=book.title||'';document.getElementById('book-text').value=bookToText();document.getElementById('vocab-text').value=vocabToText(book.vocab);document.getElementById('corr-text').value=vocabToText(corrs);document.getElementById('book-report').innerHTML='';document.getElementById('vocab-report').innerHTML='';document.getElementById('corr-text-report').innerHTML='';libroPestana('lecciones');document.getElementById('book-dlg').hidden=false;}
-function closeBook(){document.getElementById('book-dlg').hidden=true;}
+function openBook(){document.getElementById('book-title').value=book.title||'';document.getElementById('book-text').value=bookToText();document.getElementById('vocab-text').value=vocabToText(book.vocab);document.getElementById('corr-text').value=vocabToText(corrs);document.getElementById('book-report').innerHTML='';document.getElementById('vocab-report').innerHTML='';document.getElementById('corr-text-report').innerHTML='';libroPestana('lecciones');document.getElementById('book-dlg').hidden=false;marcaDialogos();}
+function closeBook(){document.getElementById('book-dlg').hidden=true;marcaDialogos();}
 function libroPestana(cual){document.querySelectorAll('#book-tabs [data-btab]').forEach(b=>{const on=b.dataset.btab===cual;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');});document.querySelectorAll('#book-dlg [data-bpane]').forEach(p=>{p.hidden=p.dataset.bpane!==cual;});}
 function pestanaActiva(){const on=document.querySelector('#book-tabs [data-btab].on');return on?on.dataset.btab:'lecciones';}
 function compruebaPestana(){const p=pestanaActiva();if(p==='vocab')return checkVocabText();if(p==='corr')return checkCorrText();return checkBookText();}
