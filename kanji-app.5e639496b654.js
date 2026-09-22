@@ -127,7 +127,10 @@ function toggleNumbers(){numbers=!numbers;LS.set('kj_numbers',numbers?'on':'off'
 function applyNumbers(){document.body.classList.toggle('no-numbers',!numbers);const v=document.getElementById('v-numbers');v.textContent=numbers?'sí':'no';v.className='val '+(numbers?'yes':'no');}
 function toggleGuides(){guides=!guides;LS.set('kj_guides',guides?'on':'off');applyGuides();}
 function applyGuides(){document.body.classList.toggle('no-guides',!guides);const v=document.getElementById('v-guides');v.textContent=guides?'sí':'no';v.className='val '+(guides?'yes':'no');}
-function printSheet(){mide('imprimir',{vista:calliOn?'caligrafia':view});fitAll();setTimeout(()=>window.print(),60);}
+function limpiaNombre(s){return String(s||'').replace(/[\\/:*?"<>|]/g,' ').replace(/\s+/g,' ').trim().slice(0,40).trim();}
+function tituloAlImprimir(nombre){const original=document.title;document.title=nombre;let hecho=false;const vuelve=()=>{if(hecho)return;hecho=true;document.title=original;window.removeEventListener('afterprint',vuelve);};window.addEventListener('afterprint',vuelve);setTimeout(vuelve,60000);}
+function nombreHoja(){const les=book.lessons[lesson]||{};const que=calliOn?'Caligrafía':view==='vocab'?'Vocabulario':view==='examen'?'Examen':'Fichas';const tema=limpiaNombre(les.name);return'Kanji - L'+limpiaNombre(les.n)+(tema?' '+tema:'')+' - '+que;}
+function printSheet(){mide('imprimir',{vista:calliOn?'caligrafia':view});tituloAlImprimir(nombreHoja());fitAll();setTimeout(()=>window.print(),60);}
 let toastTimer;function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
 const DIALOGOS=['kanji-dlg','book-dlg','calli-dlg','corr-dlg','game'];function marcaDialogos(){const hay=DIALOGOS.some(id=>!document.getElementById(id).hidden);document.documentElement.classList.toggle('dlg-abierto',hay);document.body.classList.toggle('dlg-abierto',hay);}
 let kdChar=null;let kdList=[],kdIdx=-1;let kdShown=0;let kdTimer=null;let kdAnim=null;let kdSpeed=1;function kdPaths(){const svg=document.querySelector('#kd-stage .kvg .g-ink');return svg?Array.from(svg.querySelectorAll('path')):[];}
