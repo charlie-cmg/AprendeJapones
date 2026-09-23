@@ -332,7 +332,7 @@ if(guardado){aplica(guardado);document.getElementById('cookie-reabrir').hidden=f
 </div>
 <div id="ajustes-dlg" class="no-print" hidden role="dialog" aria-modal="true" aria-label="Ajustes">
   <div class="game-card aj-card">
-    <button class="card-close" onclick="closeAjustes()" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg></button>
+    <button class="game-close" onclick="closeAjustes()" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg></button>
     <h2>Ajustes</h2>
     <p class="lead">Todo lo que se puede cambiar. Nada de esto se pierde: se guarda en este navegador.</p>
     <div class="aj-cuerpo">
@@ -700,7 +700,7 @@ catch(e){return false;}}
 function marcaSeis(){const escribiendo=calliOn&&escribiendoAhora();const pon=(id,si)=>{const b=document.getElementById(id);if(b)b.classList.toggle('on',si);};pon('m-view',!calliOn&&mode==='view');pon('m-edit',!calliOn&&mode==='edit');pon('m-practice',!calliOn&&mode==='practice');pon('m-calli',calliOn&&!escribiendo);pon('m-escribir',escribiendo);}
 function openAjustes(){if(document.body.classList.contains('menu-abierto'))toggleMenu();document.getElementById('ajustes-dlg').hidden=false;const primera=document.querySelector('#ajustes-dlg .aj-fila');if(primera)primera.focus();}
 function closeAjustes(){document.getElementById('ajustes-dlg').hidden=true;}
-function calliButton(){if(calliOn){setCalli(false);return;}
+(function(){var dlg=document.getElementById('ajustes-dlg');if(!dlg)return;var empezo=null;dlg.addEventListener('mousedown',function(e){empezo=e.target;});dlg.addEventListener('click',function(e){if(e.target===dlg&&empezo===dlg)closeAjustes();});})();function calliButton(){if(calliOn){setCalli(false);return;}
 openCalli();}
 function openCalli(){const box=document.getElementById('chips-crows');if(!box.children.length){const rows=[...appData.gojuon.map((r,i)=>({id:'g'+i,label:r.row==='—'?'A':r.row})),...appData.dakuten.map((r,i)=>({id:'d'+i,label:r.row})),{id:'y',label:'Yōon'}];box.innerHTML=rows.map((r,i)=>`<button class="chip${i === 0 ? ' on' : ''}" data-crow="${r.id}">${esc(r.label)}</button>`).join('');}
 document.getElementById('calli-dlg').hidden=false;}
