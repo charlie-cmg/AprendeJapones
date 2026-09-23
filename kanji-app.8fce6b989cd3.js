@@ -164,9 +164,12 @@ function findNorm(s){return String(s==null?'':s).toLowerCase().normalize('NFD').
 function findRom(s){return findNorm(s).replace(/sy/g,'sh').replace(/ty/g,'ch').replace(/zy/g,'j').replace(/(^|[^sctz])hu/g,'$1fu').replace(/tu/g,'tsu').replace(/ou|oo/g,'o').replace(/uu/g,'u');}
 function findSep(s,fn){return String(s).split(/[・·\s]+/).map(fn).filter(Boolean).join('|');}
 function findWords(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').split(/[^a-z0-9ñ]+/).filter(Boolean);}
-let FIND=null;function findReset(){FIND=null;const res=document.getElementById('find-res');if(res&&!res.hidden)findRun();}
-function findBuild(){if(typeof VOC==='undefined'&&window.VOCAB_JS&&!vocabIntentado){pideVocabulario().then(()=>findBuild());return;}
-FIND=[];const vistos=new Set();book.lessons.forEach((les,i)=>{lessonKanji(les).forEach(ch=>{if(vistos.has(ch))return;vistos.add(ch);const d=kanjiInfo(ch);if(!d)return;const kana=(prettyOn(d[1])+' '+prettyKun(d[2])).trim();FIND.push({w:0,ch,les:i,n:les.n,txt:ch,es:d[3],kana,nkana:findSep(kana,findNorm),rom:findSep(romajiOn(d[1])+'·'+romajiKun(d[2]),findRom),pal:findWords(d[3])});vocabOf(ch,true).forEach(v=>{FIND.push({w:1,ch,les:i,n:les.n,txt:v[0],es:v[2],kana:v[1],nkana:findNorm(v[1]),rom:findRom(wordToRomaji(v[1])),pal:findWords(v[2])});});});});}
+let FIND=null;let FIND_EN_LIBRO=null;let FUERA=null;function findReset(){FIND=null;FIND_EN_LIBRO=null;FUERA=null;const res=document.getElementById('find-res');if(res&&!res.hidden)findRun();}
+function findBuild(){if(typeof VOC==='undefined'&&window.VOCAB_JS&&!vocabIntentado){pideVocabulario().then(()=>{findBuild();const res=document.getElementById('find-res');if(res&&!res.hidden)findRun();});return;}
+FIND=[];const vistos=new Set();book.lessons.forEach((les,i)=>{lessonKanji(les).forEach(ch=>{if(vistos.has(ch))return;vistos.add(ch);findPush(FIND,ch,i,les.n);});});FIND_EN_LIBRO=vistos;}
+function findPush(lista,ch,i,n){const d=kanjiInfo(ch);if(!d)return;const kana=(prettyOn(d[1])+' '+prettyKun(d[2])).trim();lista.push({w:0,ch,les:i,n:n,txt:ch,es:d[3],kana,nkana:findSep(kana,findNorm),rom:findSep(romajiOn(d[1])+'·'+romajiKun(d[2]),findRom),pal:findWords(d[3])});vocabOf(ch,true).forEach(v=>{lista.push({w:1,ch,les:i,n:n,txt:v[0],es:v[2],kana:v[1],nkana:findNorm(v[1]),rom:findRom(wordToRomaji(v[1])),pal:findWords(v[2])});});}
+function findBuildFuera(){if(typeof VOC==='undefined'&&window.VOCAB_JS&&!vocabIntentado){pideVocabulario().then(()=>findExtenso());return;}
+if(!FIND)findBuild();if(!FIND_EN_LIBRO)return;FUERA=[];for(const ch of Object.keys(KD)){if(!FIND_EN_LIBRO.has(ch))findPush(FUERA,ch,-1,-1);}}
 const FIND_MAX=40;const NUM_ES={'0':'cero','1':'uno','2':'dos','3':'tres','4':'cuatro','5':'cinco','6':'seis','7':'siete','8':'ocho','9':'nueve','10':'diez','100':'cien','1000':'mil','10000':'diez mil','100000000':'cien millones','1000000000':'mil millones','10000000000':'diez mil millones','1000000000000':'billón'};function contieneFrase(pal,frase){for(let i=0;i+frase.length<=pal.length;i++){let ok=true;for(let j=0;j<frase.length;j++)if(pal[i+j]!==frase[j]){ok=false;break;}
 if(ok)return true;}
 return false;}
@@ -174,21 +177,28 @@ function findScore(e,q,qr,qNum){let mejor=-1;const mira=(campo,consulta)=>{if(!c
 if(p.indexOf(q)===0&&(mejor<0||mejor>4))mejor=4;}
 if(qNum&&qNum.length&&contieneFrase(e.pal,qNum)){if(mejor<0||mejor>4)mejor=4;}
 return mejor;}
-function findSearch(raw){const q=findNorm(raw);const qr=findRom(raw);if(q.length<1)return[];if(!FIND)findBuild();const qNum=/^\d+$/.test(q)&&NUM_ES[q]?findWords(NUM_ES[q]):null;const out=[];for(const e of FIND){const s=findScore(e,q,qr,qNum);if(s>=0)out.push({e,s});}
+function findSearch(raw,lista){const q=findNorm(raw);const qr=findRom(raw);if(q.length<1)return[];if(!lista){if(!FIND)findBuild();lista=FIND;}
+if(!lista)return[];const qNum=/^\d+$/.test(q)&&NUM_ES[q]?findWords(NUM_ES[q]):null;const out=[];for(const e of lista){const s=findScore(e,q,qr,qNum);if(s>=0)out.push({e,s});}
 out.sort((a,b)=>a.s-b.s||a.e.w-b.e.w||a.e.les-b.e.les||a.e.txt.length-b.e.txt.length);const vistas=new Map(),res=[];for(const o of out){const k=o.e.w+'|'+o.e.txt;const ya=vistas.get(k);if(ya){if(!ya.dest.some(t=>t.les===o.e.les)){ya.dest.push({les:o.e.les,n:o.e.n,ch:o.e.ch});}
 continue;}
 if(res.length>=FIND_MAX)continue;const fila=Object.assign({},o.e,{dest:[{les:o.e.les,n:o.e.n,ch:o.e.ch}]});vistas.set(k,fila);res.push(fila);}
 for(const e of res)e.dest.sort((a,b)=>a.les-b.les);return res;}
 let findHits=[],findSel=-1;function findRun(){const q=document.getElementById('find-q').value.trim();const res=document.getElementById('find-res');document.getElementById('find-x').hidden=!q;if(!q){findHits=[];findSel=-1;res.hidden=true;res.innerHTML='';return;}
-findHits=findSearch(q);findSel=findHits.length?0:-1;if(!findHits.length){res.innerHTML='<div class="find-none">Nada para <b>'+esc(q)+'</b>. '+'Se puede buscar por kanji, kana, rōmaji o significado.</div>';res.hidden=false;return;}
-let html='',cat=null;findHits.forEach((e,i)=>{const c=e.w?'Palabras':'Kanji';if(c!==cat){cat=c;html+='<div class="find-cat">'+c+'</div>';}
+findHits=findSearch(q);findSel=findHits.length?0:-1;if(!findHits.length){findNada(q,true);return;}
+findPinta('');}
+function findNada(q,extensa){const res=document.getElementById('find-res');res.innerHTML='<div class="find-none">Nada para <b>'+esc(q)+'</b>'+
+(extensa?' en tu libro. ':', ni dentro ni fuera de tu libro. ')+'Se puede buscar por kanji, kana, rōmaji o significado.'+
+(extensa?'<button type="button" class="find-mas"'+' onmousedown="event.preventDefault()" onclick="findExtenso()">'+'Búsqueda extensa'+'<small>Mira también los kanji que no están en tu libro</small>'+'</button>':'')+'</div>';res.hidden=false;}
+function findExtenso(){const q=document.getElementById('find-q').value.trim();if(!q)return;if(!FUERA)findBuildFuera();if(!FUERA)return;findHits=findSearch(q,FUERA);findSel=findHits.length?0:-1;if(!findHits.length){findNada(q,false);return;}
+findPinta(' · fuera de tu libro');}
+function findPinta(sufijo){const res=document.getElementById('find-res');let html='',cat=null;findHits.forEach((e,i)=>{const c=e.w?'Palabras':'Kanji';if(c!==cat){cat=c;html+='<div class="find-cat">'+c+sufijo+'</div>';}
 html+='<button class="fr'+(i===findSel?' on':'')+'" role="option" '+'onclick="findGo('+i+')" onmousemove="findMark('+i+')">'+'<span class="jp">'+esc(e.w?e.txt:e.ch)+'</span>'+'<span class="top">'+
 (e.w?'<b>'+esc(e.kana)+'</b>':'<i>'+esc(e.kana)+'</i>')+'<span class="rom">'+esc(e.w?wordToRomaji(e.kana):findRomKanji(e.ch))+'</span>'+'</span>'+'<span class="les-grupo">'+
-e.dest.map((t,d)=>'<span class="les" title="Ir a la lección '+esc(t.n)+'"'+' onclick="findGo('+i+','+d+');event.stopPropagation();">'+'L'+esc(t.n)+'</span>').join('')+'</span>'+'<span class="es">'+esc(e.es)+'</span>'+'</button>';});res.innerHTML=html;res.hidden=false;res.scrollTop=0;}
+(e.les<0?'<span class="les fuera" title="No está en tu libro">fuera</span>':e.dest.map((t,d)=>'<span class="les" title="Ir a la lección '+esc(t.n)+'"'+' onclick="findGo('+i+','+d+');event.stopPropagation();">'+'L'+esc(t.n)+'</span>').join(''))+'</span>'+'<span class="es">'+esc(e.es)+'</span>'+'</button>';});res.innerHTML=html;res.hidden=false;res.scrollTop=0;}
 function findRomKanji(ch){const d=kanjiInfo(ch);if(!d)return'';const on=d[1]?kanaToRomaji(d[1].split('·')[0],true):'';const kun=d[2]?romajiKun(d[2].split('·')[0]):'';return[on,kun].filter(Boolean).join(' · ');}
 function findMark(i){if(i===findSel)return;findSel=i;document.querySelectorAll('#find-res .fr').forEach((b,j)=>b.classList.toggle('on',j===i));}
 function findMove(d){if(!findHits.length)return;findSel=(findSel+d+findHits.length)%findHits.length;const filas=document.querySelectorAll('#find-res .fr');filas.forEach((b,j)=>b.classList.toggle('on',j===findSel));const f=filas[findSel];if(f)f.scrollIntoView({block:'nearest'});}
-function findGo(i,d){const e=findHits[i];if(!e)return;const t=e.dest[d||0];findHide();document.getElementById('find-q').blur();if(t.les!==lesson)setLesson(t.les);openKanji(t.ch,e.w?e.txt:null);}
+function findGo(i,d){const e=findHits[i];if(!e)return;const t=e.dest[d||0];findHide();document.getElementById('find-q').blur();if(t.les>=0&&t.les!==lesson)setLesson(t.les);openKanji(t.ch,e.w?e.txt:null);}
 function findHide(){document.getElementById('find-res').hidden=true;}
 function findClear(){const q=document.getElementById('find-q');q.value='';findRun();q.focus();}
 (()=>{const q=document.getElementById('find-q');q.addEventListener('input',findRun);q.addEventListener('focus',()=>{if(q.value.trim())findRun();});q.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();findMove(1);}
