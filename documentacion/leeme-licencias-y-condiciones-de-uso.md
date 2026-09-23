@@ -34,9 +34,10 @@ nadie más lo ve. Eso tiene dos consecuencias prácticas:
 - si borras los datos de navegación, **se borra tu progreso**;
 - si abres el archivo en otro ordenador o en otro navegador, empiezas de cero.
 
-> **Haz copias.** El botón **Copia** baja un archivo con tus cosas y
-> **Cargar** lo restaura. En la app de kanji esa copia incluye también el
-> progreso del juego, que es lo único que no se puede rehacer a mano.
+> **Haz copias.** **Copia** baja un archivo con tus cosas y **Cargar** lo
+> restaura —en el silabario están en la barra; en la app de kanji, dentro de
+> **Ajustes**—. Esa copia incluye también el progreso del juego, que es lo
+> único que no se puede rehacer a mano.
 
 Lo de arriba no cambia. Lo único que sale de tu navegador —y solo en
 `estudiajapones.com`, y solo si tú lo aceptas la primera vez que entras— son
@@ -164,6 +165,7 @@ sustituye a un profesor ni a un diccionario. Si encuentras un fallo, dilo.
 | Al imprimir salen dos páginas | Escala 100 %, márgenes por defecto y sin encabezados del navegador (capítulo «Imprimir bien»). |
 | Ha desaparecido mi progreso | Se han borrado los datos del navegador. Restaura con **Cargar** la última copia que bajaste con **Copia**. |
 | Quiero empezar el juego de cero | Dentro del juego, **Borrar mi progreso**. |
-| He liado la tabla o las lecciones | El botón de restaurar (la flecha circular) las deja como venían de fábrica. |
-| La letra sale muy pequeña en la hoja de fichas | Apaga **Ejemplos** o cambia a **2 columnas**: cuanto menos contenido, más grande sale todo lo demás. |
+| He liado la tabla del silabario | El botón **Restaurar la tabla original** la deja como venía de fábrica. |
+| He liado mis lecciones de kanji | En **Mi libro**, **Cargar el libro de ejemplo** vuelve a poner el reparto por nivel JLPT. |
+| La letra sale muy pequeña en la hoja de fichas | En **Ajustes**, apaga **Ejemplos** o cambia a **1 columna**: cuanto menos contenido, más grande sale todo lo demás. |
 | Nada de esto arregla lo tuyo | Escríbeme a hola@estudiajapones.com o abre un tema en GitHub Issues. |
